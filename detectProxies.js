@@ -269,6 +269,8 @@ function logStats(stats, type) {
  * Process proxies with a concurrency queue.
  * Tracks error histogram for failed proxies.
  * Also tracks and logs how many proxies were already tested and how many still need to be processed.
+ * 
+ * FIX: Ensure the logInterval is cleared as soon as all proxies are finished, even if all are skipped (already tested).
  */
 async function processProxiesWithQueue(proxyObjs, type, currentResults, workingSet, failedSet, currentPublicIp, results, outputPath, outputDir) {
   let testedCountSinceSave = 0;
@@ -383,10 +385,39 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
   }
 
   function launchNext() {
+    // If all proxies are already tested, immediately finish and clear logInterval
+    if (nextIndex >= total && active === 0) {
+      // This can happen if all proxies are already in workingSet/failedSet
+      if (finished >= total) {
+        clearInterval(logInterval);
+        stats.active = active;
+        stats.finished = finished;
+        stats.detected = detected;
+        stats.failed = failed;
+        stats.errorHistogram = errorHistogram;
+        stats.total = total;
+        logStats(stats, type);
+        resolvePromise();
+      }
+      return;
+    }
     while (active < CONCURRENCY && nextIndex < total) {
       const proxyObj = proxyObjs[nextIndex++];
       if (workingSet.has(proxyObj.normalized) || failedSet.has(proxyObj.normalized)) {
         finished++;
+        // If this was the last one, check for completion
+        if (finished >= total && active === 0) {
+          clearInterval(logInterval);
+          stats.active = active;
+          stats.finished = finished;
+          stats.detected = detected;
+          stats.failed = failed;
+          stats.errorHistogram = errorHistogram;
+          stats.total = total;
+          logStats(stats, type);
+          resolvePromise();
+          return;
+        }
         continue;
       }
       active++;
