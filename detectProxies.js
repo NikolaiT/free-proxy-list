@@ -517,6 +517,11 @@ async function detectProxies() {
     process.exit(0);
   } else if (process.argv.includes('detectProxies')) {
     detectProxies()
+      .then(results => {
+        console.log('[+] Proxy detection completed.');
+        writeWorkingProxiesToFiles();
+        process.exitCode = 0;
+      })
       .catch(error => {
         console.error('[-] Critical error in proxy detection process:', error);
         process.exitCode = 1;
