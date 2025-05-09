@@ -14,7 +14,7 @@ const CACHE_DIR = path.join(__dirname, 'cache');
 const RESULTS_CACHE_DIR = path.join(__dirname, 'results_cache');
 const TEST_URL = 'https://icanhazip.com/';
 const TIMEOUT = 12000;
-const CONCURRENCY = 30;
+const CONCURRENCY = 50;
 const SAVE_INTERVAL = 200;
 // Cache validity for proxy source downloads: 6 hours (in ms)
 const PROXY_SOURCE_CACHE_VALIDITY = 6 * 60 * 60 * 1000; // 6 hours

@@ -78,7 +78,7 @@ async function testProxy(proxyObj, currentPublicIp, useCache = true) {
   const { type, host, port, normalized } = proxyObj;
   const cacheKey = `${type}_${host}_${port}`.replace(/[^a-zA-Z0-9]/g, '_');
   const cachePath = path.join(RESULTS_CACHE_DIR, `${cacheKey}.json`);
-  const CACHE_VALIDITY_MS = 6 * 60 * 60 * 1000; // 6 hours
+  const CACHE_VALIDITY_MS = 18 * 60 * 60 * 1000; // 18 hours
 
   // Check cache first, but only if useCache is true and cache is fresh (less than 6 hours old)
   let cacheIsFresh = false;
@@ -231,6 +231,7 @@ function groupProxiesByType(dedupedProxies) {
 
 /**
  * Log statistics for proxy testing, including error histogram.
+ * Also logs how many proxies were already tested and how many still need to be processed.
  */
 function logStats(stats, type) {
   const now = Date.now();
@@ -239,10 +240,17 @@ function logStats(stats, type) {
   const detected = stats.detected;
   const failed = stats.failed;
   const concurrency = stats.active;
+  const total = stats.total !== undefined ? stats.total : undefined;
   const finishedPerSec = (finished / elapsed).toFixed(2);
   const detectedPerSec = (detected / elapsed).toFixed(2);
   const failedPerSec = (failed / elapsed).toFixed(2);
-  console.log(`[${type}] [${new Date().toISOString()}] Concurrency: ${concurrency}, Finished: ${finished}, Working: ${detected}, Failed: ${failed}`);
+
+  let testedMsg = '';
+  if (typeof total === 'number') {
+    const remaining = total - finished;
+    testedMsg = ` | Tested: ${finished} / ${total} | Remaining: ${remaining}`;
+  }
+  console.log(`[${type}] [${new Date().toISOString()}] Concurrency: ${concurrency}, Finished: ${finished}, Working: ${detected}, Failed: ${failed}${testedMsg}`);
   console.log(`[${type}] Proxies/sec: Finished: ${finishedPerSec}, Working: ${detectedPerSec}, Failed: ${failedPerSec}`);
 
   // Print error histogram if available
@@ -260,6 +268,7 @@ function logStats(stats, type) {
 /**
  * Process proxies with a concurrency queue.
  * Tracks error histogram for failed proxies.
+ * Also tracks and logs how many proxies were already tested and how many still need to be processed.
  */
 async function processProxiesWithQueue(proxyObjs, type, currentResults, workingSet, failedSet, currentPublicIp, results, outputPath, outputDir) {
   let testedCountSinceSave = 0;
@@ -277,7 +286,8 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
     detected: 0,
     failed: 0,
     active: 0,
-    errorHistogram
+    errorHistogram,
+    total // Add total to stats for logging
   };
 
   let resolvePromise;
@@ -289,6 +299,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
     stats.detected = detected;
     stats.failed = failed;
     stats.errorHistogram = errorHistogram;
+    stats.total = total;
     logStats(stats, type);
   }, 10000);
 
@@ -363,6 +374,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
       stats.detected = detected;
       stats.failed = failed;
       stats.errorHistogram = errorHistogram;
+      stats.total = total;
       logStats(stats, type);
       resolvePromise();
     } else {
