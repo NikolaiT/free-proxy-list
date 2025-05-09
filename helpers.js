@@ -205,6 +205,8 @@ const writeWorkingProxiesToFiles = () => {
     fs.mkdirSync(proxiesDir, { recursive: true });
   }
 
+  const allIPs = [];
+
   for (const type of protocols) {
     const currentResults = results[type] || { working: [] };
     // Normalize and dedupe using normalizeProxyLine
@@ -218,11 +220,17 @@ const writeWorkingProxiesToFiles = () => {
       if (norm && !normalizedSet.has(norm.normalized)) {
         normalizedSet.add(norm.normalized);
         dedupedProxies.push(norm.normalized.replace(/^.*?:\/\//, '')); // Write as host:port
+        allIPs.push(norm.host);
       }
     }
     const filePath = path.join(proxiesDir, `${type}_working.txt`);
     fs.writeFileSync(filePath, dedupedProxies.join('\n'));
   }
+
+  const uniqueIPs = [...new Set(allIPs)];
+  const outputPath = path.join(proxiesDir, 'ips.txt');
+  fs.writeFileSync(outputPath, uniqueIPs.join('\n'), 'utf8');
+  console.log(`[+] Saved unique working IPs to ${outputPath} (${uniqueIPs.length} IPs)`);
 }
 
 if (!fs.existsSync(CACHE_DIR)) {
