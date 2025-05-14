@@ -231,7 +231,7 @@ const writeWorkingProxiesToFiles = () => {
   const outputPath = path.join(proxiesDir, 'ips.txt');
   fs.writeFileSync(outputPath, uniqueIPs.join('\n'), 'utf8');
   const lastUpdatedPath = path.join(proxiesDir, 'lastUpdated.txt');
-  const currentDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+  const currentDate = new Date().toISOString();
   fs.writeFileSync(lastUpdatedPath, currentDate, 'utf8');
   console.log(`[+] Updated lastUpdated.txt with current date: ${currentDate}`);
   console.log(`[+] Saved unique working IPs to ${outputPath} (${uniqueIPs.length} IPs)`);
