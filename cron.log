@@ -1,0 +1,584 @@
+[Wed May 14 11:16:34 UTC 2025] Starting proxy detection cronjob
+[+] Current public IP detected: 2a01:4f8:1c1a:b453::1
+[+] Loaded existing results from /root/free-proxy-list/outputs/proxy_results.json
+[+] Downloaded https://raw.githubusercontent.com/vakhov/fresh-proxy-list/refs/heads/master/socks5.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_vakhov_fresh-proxy-list_refs_heads_master_socks5_txt.txt
+[+] Loaded 71 proxies from socks5.txt (socks5)
+[+] Downloaded https://raw.githubusercontent.com/TheSpeedX/PROXY-List/refs/heads/master/socks5.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_TheSpeedX_PROXY-List_refs_heads_master_socks5_txt.txt
+[+] Loaded 1246 proxies from socks5.txt (socks5)
+[+] Downloaded https://raw.githubusercontent.com/proxifly/free-proxy-list/refs/heads/main/proxies/protocols/socks5/data.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_proxifly_free-proxy-list_refs_heads_main_proxies_protocols_socks5_data_txt.txt
+[+] Loaded 28 proxies from data.txt (socks5)
+[+] Downloaded https://raw.githubusercontent.com/hookzof/socks5_list/refs/heads/master/proxy.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_hookzof_socks5_list_refs_heads_master_proxy_txt.txt
+[+] Loaded 66 proxies from proxy.txt (socks5)
+[+] Downloaded https://raw.githubusercontent.com/zebbern/Proxy-Scraper/refs/heads/main/socks5.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_zebbern_Proxy-Scraper_refs_heads_main_socks5_txt.txt
+[+] Loaded 1678 proxies from socks5.txt (socks5)
+[+] Downloaded https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/refs/heads/main/socks5_checked.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_MuRongPIG_Proxy-Master_refs_heads_main_socks5_checked_txt.txt
+[+] Loaded 41 proxies from socks5_checked.txt (socks5)
+[+] Downloaded https://raw.githubusercontent.com/dpangestuw/Free-Proxy/refs/heads/main/socks5_proxies.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_dpangestuw_Free-Proxy_refs_heads_main_socks5_proxies_txt.txt
+[+] Loaded 1308 proxies from socks5_proxies.txt (socks5)
+[+] Downloaded https://raw.githubusercontent.com/vakhov/fresh-proxy-list/refs/heads/master/socks4.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_vakhov_fresh-proxy-list_refs_heads_master_socks4_txt.txt
+[+] Loaded 74 proxies from socks4.txt (socks4)
+[+] Downloaded https://raw.githubusercontent.com/TheSpeedX/PROXY-List/refs/heads/master/socks4.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_TheSpeedX_PROXY-List_refs_heads_master_socks4_txt.txt
+[+] Loaded 1638 proxies from socks4.txt (socks4)
+[+] Downloaded https://raw.githubusercontent.com/proxifly/free-proxy-list/refs/heads/main/proxies/protocols/socks4/data.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_proxifly_free-proxy-list_refs_heads_main_proxies_protocols_socks4_data_txt.txt
+[+] Loaded 60 proxies from data.txt (socks4)
+[+] Downloaded https://raw.githubusercontent.com/zebbern/Proxy-Scraper/refs/heads/main/socks4.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_zebbern_Proxy-Scraper_refs_heads_main_socks4_txt.txt
+[+] Loaded 2444 proxies from socks4.txt (socks4)
+[+] Downloaded https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/refs/heads/main/socks4_checked.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_MuRongPIG_Proxy-Master_refs_heads_main_socks4_checked_txt.txt
+[+] Loaded 31 proxies from socks4_checked.txt (socks4)
+[+] Downloaded https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/refs/heads/master/socks4.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_Zaeem20_FREE_PROXIES_LIST_refs_heads_master_socks4_txt.txt
+[+] Loaded 104 proxies from socks4.txt (socks4)
+[+] Downloaded https://raw.githubusercontent.com/dpangestuw/Free-Proxy/refs/heads/main/socks4_proxies.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_dpangestuw_Free-Proxy_refs_heads_main_socks4_proxies_txt.txt
+[+] Loaded 2118 proxies from socks4_proxies.txt (socks4)
+[+] Downloaded https://raw.githubusercontent.com/vakhov/fresh-proxy-list/refs/heads/master/http.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_vakhov_fresh-proxy-list_refs_heads_master_http_txt.txt
+[+] Loaded 11855 proxies from http.txt (http)
+[+] Downloaded https://raw.githubusercontent.com/TheSpeedX/PROXY-List/refs/heads/master/http.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_TheSpeedX_PROXY-List_refs_heads_master_http_txt.txt
+[+] Loaded 1996 proxies from http.txt (http)
+[+] Downloaded https://raw.githubusercontent.com/proxifly/free-proxy-list/refs/heads/main/proxies/protocols/http/data.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_proxifly_free-proxy-list_refs_heads_main_proxies_protocols_http_data_txt.txt
+[+] Loaded 11464 proxies from data.txt (http)
+[+] Downloaded https://raw.githubusercontent.com/zebbern/Proxy-Scraper/refs/heads/main/http.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_zebbern_Proxy-Scraper_refs_heads_main_http_txt.txt
+[+] Loaded 5068 proxies from http.txt (http)
+[+] Downloaded https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/refs/heads/main/http_checked.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_MuRongPIG_Proxy-Master_refs_heads_main_http_checked_txt.txt
+[+] Loaded 22 proxies from http_checked.txt (http)
+[+] Downloaded https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/refs/heads/master/http.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_Zaeem20_FREE_PROXIES_LIST_refs_heads_master_http_txt.txt
+[+] Loaded 148 proxies from http.txt (http)
+[+] Downloaded https://raw.githubusercontent.com/dpangestuw/Free-Proxy/refs/heads/main/http_proxies.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_dpangestuw_Free-Proxy_refs_heads_main_http_proxies_txt.txt
+[+] Loaded 2837 proxies from http_proxies.txt (http)
+[+] Downloaded https://raw.githubusercontent.com/vakhov/fresh-proxy-list/refs/heads/master/https.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_vakhov_fresh-proxy-list_refs_heads_master_https_txt.txt
+[+] Loaded 5 proxies from https.txt (https)
+[+] Downloaded https://raw.githubusercontent.com/proxifly/free-proxy-list/refs/heads/main/proxies/protocols/https/data.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_proxifly_free-proxy-list_refs_heads_main_proxies_protocols_https_data_txt.txt
+[+] Loaded 2 proxies from data.txt (https)
+[+] Downloaded https://raw.githubusercontent.com/zebbern/Proxy-Scraper/refs/heads/main/https.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_zebbern_Proxy-Scraper_refs_heads_main_https_txt.txt
+[+] Loaded 3549 proxies from https.txt (https)
+[+] Downloaded https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/refs/heads/master/https.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_Zaeem20_FREE_PROXIES_LIST_refs_heads_master_https_txt.txt
+[+] Loaded 252 proxies from https.txt (https)
+[+] Total unique proxies after normalization and deduplication: 24598
+[+] Processing 1801 unique socks5 proxies...
+[+] Working socks5 proxy: socks5://27.79.239.4:17000 (27.79.239.4)
+[+] Working socks5 proxy: socks5://27.79.212.17:17000 (27.79.212.17)
+[+] Working socks5 proxy: socks5://185.93.89.166:9203 (79.139.57.49)
+[+] Working socks5 proxy: socks5://185.93.89.175:6925 (209.145.56.24)
+[+] Working socks5 proxy: socks5://185.93.89.147:5052 (92.205.212.128)
+[+] Working socks5 proxy: socks5://27.79.128.242:17000 (27.79.128.242)
+[+] Working socks5 proxy: socks5://45.142.193.18:10058 (137.184.18.162)
+[+] Working socks5 proxy: socks5://185.93.89.182:4135 (120.55.40.178)
+[+] Working socks5 proxy: socks5://185.93.89.168:12212 (85.10.158.34)
+[+] Working socks5 proxy: socks5://185.93.89.176:5468 (103.111.234.35)
+[+] Working socks5 proxy: socks5://185.93.89.162:4998 (92.204.55.171)
+[+] Working socks5 proxy: socks5://185.93.89.143:4653 (69.49.228.101)
+[+] Working socks5 proxy: socks5://185.93.89.181:11633 (78.193.66.197)
+[socks5] [2025-05-14T11:16:47.432Z] Concurrency: 50, Finished: 1502, Working: 13, Failed: 9 | Tested: 1502 / 1801 | Remaining: 299
+[socks5] Proxies/sec: Finished: 150.15, Working: 1.30, Failed: 0.90
+[socks5] Error distribution:
+    curl exited with code 7: 6
+    curl exited with code 97: 3
+[+] Working socks5 proxy: socks5://185.93.89.191:21684 (52.66.42.60)
+[+] Working socks5 proxy: socks5://27.79.255.222:17000 (27.79.255.222)
+[+] Working socks5 proxy: socks5://185.93.89.158:16996 (157.245.99.194)
+[+] Working socks5 proxy: socks5://172.233.14.116:1080 (172.233.14.116)
+[+] Working socks5 proxy: socks5://62.171.176.129:34403 (75.137.1.205)
+[+] Working socks5 proxy: socks5://185.93.89.151:4290 (185.114.245.124)
+[+] Working socks5 proxy: socks5://185.93.89.143:4313 (54.36.142.130)
+[+] Working socks5 proxy: socks5://27.79.130.141:17000 (27.79.130.141)
+[socks5] [2025-05-14T11:16:57.432Z] Concurrency: 50, Finished: 1714, Working: 21, Failed: 75 | Tested: 1714 / 1801 | Remaining: 87
+[socks5] Proxies/sec: Finished: 85.68, Working: 1.05, Failed: 3.75
+[socks5] Error distribution:
+    curl exited with code 7: 23
+    curl exited with code 97: 4
+    curl exited with code 28: 48
+[+] Working socks5 proxy: socks5://185.93.89.187:12844 (92.53.96.153)
+[+] Working socks5 proxy: socks5://185.93.89.158:17818 (176.56.56.49)
+[+] Working socks5 proxy: socks5://185.93.89.179:32098 (78.47.106.118)
+[+] Working socks5 proxy: socks5://185.93.89.158:19135 (92.53.96.153)
+[+] Working socks5 proxy: socks5://68.183.211.118:1007 (104.28.197.7)
+[+] Working socks5 proxy: socks5://27.79.194.96:17000 (27.79.194.96)
+[socks5] [2025-05-14T11:17:07.432Z] Concurrency: 18, Finished: 1783, Working: 27, Failed: 120 | Tested: 1783 / 1801 | Remaining: 18
+[socks5] Proxies/sec: Finished: 59.43, Working: 0.90, Failed: 4.00
+[socks5] Error distribution:
+    curl exited with code 7: 26
+    curl exited with code 97: 4
+    curl exited with code 28: 89
+    curl exited with code 35: 1
+[+] Working socks5 proxy: socks5://185.93.89.165:4084 (45.56.220.57)
+[socks5] [2025-05-14T11:17:13.637Z] Concurrency: 0, Finished: 1801, Working: 28, Failed: 137 | Tested: 1801 / 1801 | Remaining: 0
+[socks5] Proxies/sec: Finished: 49.74, Working: 0.77, Failed: 3.78
+[socks5] Error distribution:
+    curl exited with code 7: 26
+    curl exited with code 97: 4
+    curl exited with code 28: 106
+    curl exited with code 35: 1
+[+] Finished processing socks5 proxies.
+[+] Processing 2746 unique socks4 proxies...
+[+] Working socks4 proxy: socks4://27.77.233.11:1080 (27.77.233.11)
+[+] Working socks4 proxy: socks4://27.65.243.83:1080 (27.65.243.83)
+[+] Working socks4 proxy: socks4://134.199.159.23:1080 (134.199.159.23)
+[+] Working socks4 proxy: socks4://27.79.194.96:17000 (27.79.194.96)
+[+] Working socks4 proxy: socks4://27.79.130.141:17000 (27.79.130.141)
+[+] Working socks4 proxy: socks4://91.150.189.122:60647 (91.150.189.122)
+[+] Working socks4 proxy: socks4://187.95.82.57:3629 (187.95.82.38)
+[+] Working socks4 proxy: socks4://195.140.226.32:5678 (195.140.226.32)
+[+] Working socks4 proxy: socks4://185.161.186.92:54321 (185.161.186.92)
+[+] Working socks4 proxy: socks4://192.95.33.162:36749 (192.95.33.162)
+[+] Working socks4 proxy: socks4://5.58.33.187:5678 (5.58.33.187)
+[socks4] [2025-05-14T11:17:23.639Z] Concurrency: 50, Finished: 2475, Working: 11, Failed: 46 | Tested: 2475 / 2746 | Remaining: 271
+[socks4] Proxies/sec: Finished: 247.50, Working: 1.10, Failed: 4.60
+[socks4] Error distribution:
+    curl exited with code 7: 26
+    curl exited with code 97: 17
+    curl exited with code 60: 2
+    curl exited with code 35: 1
+[+] Working socks4 proxy: socks4://81.18.90.43:4153 (81.18.90.43)
+[+] Working socks4 proxy: socks4://149.62.193.91:4153 (78.83.237.146)
+[+] Working socks4 proxy: socks4://109.123.254.43:22963 (109.123.254.43)
+[+] Working socks4 proxy: socks4://27.79.166.225:17000 (27.79.166.225)
+[socks4] [2025-05-14T11:17:33.640Z] Concurrency: 31, Finished: 2715, Working: 15, Failed: 109 | Tested: 2715 / 2746 | Remaining: 31
+[socks4] Proxies/sec: Finished: 135.75, Working: 0.75, Failed: 5.45
+[socks4] Error distribution:
+    curl exited with code 7: 31
+    curl exited with code 97: 26
+    curl exited with code 60: 3
+    curl exited with code 35: 1
+    curl exited with code 28: 48
+[+] Working socks4 proxy: socks4://181.48.243.194:4153 (181.48.243.194)
+[socks4] [2025-05-14T11:17:41.065Z] Concurrency: 0, Finished: 2746, Working: 16, Failed: 139 | Tested: 2746 / 2746 | Remaining: 0
+[socks4] Proxies/sec: Finished: 100.12, Working: 0.58, Failed: 5.07
+[socks4] Error distribution:
+    curl exited with code 7: 31
+    curl exited with code 97: 27
+    curl exited with code 60: 3
+    curl exited with code 35: 1
+    curl exited with code 28: 77
+[+] Finished processing socks4 proxies.
+[+] Processing 16466 unique http proxies...
+[+] Working http proxy: http://172.232.226.153:3128 (172.232.226.153)
+[+] Working http proxy: http://103.48.71.162:82 (103.48.71.162)
+[+] Working http proxy: http://39.101.65.228:21025 (39.101.65.228)
+[+] Working http proxy: http://2.186.116.14:8080 (2.186.116.14)
+[http] [2025-05-14T11:17:51.075Z] Concurrency: 50, Finished: 13527, Working: 4, Failed: 34 | Tested: 13527 / 16466 | Remaining: 2939
+[http] Proxies/sec: Finished: 1352.56, Working: 0.40, Failed: 3.40
+[http] Error distribution:
+    curl exited with code 7: 6
+    curl exited with code 56: 25
+    curl exited with code 43: 1
+    curl exited with code 35: 2
+[+] Working http proxy: http://5.161.106.49:1080 (5.161.106.49)
+[http] [2025-05-14T11:18:01.075Z] Concurrency: 50, Finished: 13696, Working: 5, Failed: 126 | Tested: 13696 / 16466 | Remaining: 2770
+[http] Proxies/sec: Finished: 684.77, Working: 0.25, Failed: 6.30
+[http] Error distribution:
+    curl exited with code 7: 17
+    curl exited with code 56: 61
+    curl exited with code 43: 1
+    curl exited with code 35: 3
+    curl exited with code 28: 44
+[+] Working http proxy: http://123.17.156.165:10010 (123.24.222.180)
+[+] Working http proxy: http://115.72.175.235:10002 (115.72.45.201)
+[+] Working http proxy: http://47.105.122.72:3128 (47.105.122.72)
+[http] [2025-05-14T11:18:11.075Z] Concurrency: 50, Finished: 13824, Working: 8, Failed: 184 | Tested: 13824 / 16466 | Remaining: 2642
+[http] Proxies/sec: Finished: 460.78, Working: 0.27, Failed: 6.13
+[http] Error distribution:
+    curl exited with code 7: 20
+    curl exited with code 56: 76
+    curl exited with code 43: 1
+    curl exited with code 35: 5
+    curl exited with code 28: 82
+[+] Working http proxy: http://45.143.108.13:8080 (45.143.109.98)
+[+] Working http proxy: http://27.66.117.172:10002 (171.224.117.125)
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (1389 IPs)
+[+] Working http proxy: http://8.210.17.35:8001 (8.210.17.35)
+[http] [2025-05-14T11:18:21.076Z] Concurrency: 50, Finished: 13986, Working: 11, Failed: 259 | Tested: 13986 / 16466 | Remaining: 2480
+[http] Proxies/sec: Finished: 349.63, Working: 0.27, Failed: 6.47
+[http] Error distribution:
+    curl exited with code 7: 25
+    curl exited with code 56: 101
+    curl exited with code 43: 1
+    curl exited with code 35: 6
+    curl exited with code 28: 126
+[+] Working http proxy: http://47.89.159.212:5060 (47.89.159.212)
+[+] Working http proxy: http://39.101.65.228:1081 (39.101.65.228)
+[+] Working http proxy: http://8.220.136.174:20000 (8.220.136.174)
+[+] Working http proxy: http://39.101.65.228:8009 (39.101.65.228)
+[+] Working http proxy: http://177.234.217.44:999 (177.234.217.42)
+[+] Working http proxy: http://8.211.194.78:3128 (8.211.194.78)
+[http] [2025-05-14T11:18:31.079Z] Concurrency: 50, Finished: 14112, Working: 17, Failed: 333 | Tested: 14112 / 16466 | Remaining: 2354
+[http] Proxies/sec: Finished: 282.21, Working: 0.34, Failed: 6.66
+[http] Error distribution:
+    curl exited with code 7: 33
+    curl exited with code 56: 133
+    curl exited with code 43: 1
+    curl exited with code 35: 7
+    curl exited with code 28: 159
+[+] Working http proxy: http://47.251.87.74:8081 (47.251.87.74)
+[+] Working http proxy: http://115.74.1.101:10010 (115.72.167.185)
+[+] Working http proxy: http://115.72.36.39:10008 (115.77.165.29)
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (1392 IPs)
+[http] [2025-05-14T11:18:41.079Z] Concurrency: 50, Finished: 14201, Working: 20, Failed: 384 | Tested: 14201 / 16466 | Remaining: 2265
+[http] Proxies/sec: Finished: 236.66, Working: 0.33, Failed: 6.40
+[http] Error distribution:
+    curl exited with code 7: 40
+    curl exited with code 56: 146
+    curl exited with code 43: 1
+    curl exited with code 35: 8
+    curl exited with code 28: 189
+[http] [2025-05-14T11:18:51.079Z] Concurrency: 50, Finished: 14345, Working: 20, Failed: 466 | Tested: 14345 / 16466 | Remaining: 2121
+[http] Proxies/sec: Finished: 204.91, Working: 0.29, Failed: 6.66
+[http] Error distribution:
+    curl exited with code 7: 52
+    curl exited with code 56: 179
+    curl exited with code 43: 1
+    curl exited with code 35: 9
+    curl exited with code 28: 225
+[+] Working http proxy: http://47.104.28.135:8080 (47.104.28.135)
+[+] Working http proxy: http://47.254.36.213:1080 (47.254.36.213)
+[+] Working http proxy: http://47.254.36.213:45 (47.254.36.213)
+[+] Working http proxy: http://8.213.195.191:8095 (8.213.195.191)
+[+] Working http proxy: http://8.130.34.44:8899 (8.130.34.44)
+[http] [2025-05-14T11:19:01.079Z] Concurrency: 50, Finished: 14473, Working: 25, Failed: 536 | Tested: 14473 / 16466 | Remaining: 1993
+[http] Proxies/sec: Finished: 180.90, Working: 0.31, Failed: 6.70
+[http] Error distribution:
+    curl exited with code 7: 59
+    curl exited with code 56: 203
+    curl exited with code 43: 1
+    curl exited with code 35: 10
+    curl exited with code 28: 263
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (1393 IPs)
+[http] [2025-05-14T11:19:11.079Z] Concurrency: 50, Finished: 14597, Working: 25, Failed: 598 | Tested: 14597 / 16466 | Remaining: 1869
+[http] Proxies/sec: Finished: 162.18, Working: 0.28, Failed: 6.64
+[http] Error distribution:
+    curl exited with code 7: 65
+    curl exited with code 56: 223
+    curl exited with code 43: 1
+    curl exited with code 35: 10
+    curl exited with code 28: 299
+[+] Working http proxy: http://47.104.28.135:8008 (47.104.28.135)
+[http] [2025-05-14T11:19:21.080Z] Concurrency: 50, Finished: 14735, Working: 26, Failed: 679 | Tested: 14735 / 16466 | Remaining: 1731
+[http] Proxies/sec: Finished: 147.34, Working: 0.26, Failed: 6.79
+[http] Error distribution:
+    curl exited with code 7: 76
+    curl exited with code 56: 250
+    curl exited with code 43: 1
+    curl exited with code 35: 11
+    curl exited with code 28: 341
+[+] Working http proxy: http://47.91.120.190:8443 (47.91.120.190)
+[+] Working http proxy: http://210.79.178.14:8082 (210.79.178.106)
+[+] Working http proxy: http://115.74.9.156:10005 (115.72.4.117)
+[+] Working http proxy: http://115.72.36.39:10009 (115.77.129.18)
+[+] Working http proxy: http://157.15.66.100:8080 (157.15.66.100)
+[+] Working http proxy: http://121.233.141.239:3712 (121.233.141.239)
+[+] Working http proxy: http://67.43.236.19:21951 (177.54.193.104)
+[http] [2025-05-14T11:19:31.081Z] Concurrency: 50, Finished: 14886, Working: 33, Failed: 751 | Tested: 14886 / 16466 | Remaining: 1580
+[http] Proxies/sec: Finished: 135.32, Working: 0.30, Failed: 6.83
+[http] Error distribution:
+    curl exited with code 7: 88
+    curl exited with code 56: 271
+    curl exited with code 43: 1
+    curl exited with code 35: 12
+    curl exited with code 28: 379
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (1399 IPs)
+[+] Working http proxy: http://8.213.222.247:666 (8.213.222.247)
+[+] Working http proxy: http://119.123.247.241:9000 (119.123.247.241)
+[+] Working http proxy: http://103.239.254.72:58080 (103.149.143.129)
+[http] [2025-05-14T11:19:41.081Z] Concurrency: 50, Finished: 15011, Working: 36, Failed: 808 | Tested: 15011 / 16466 | Remaining: 1455
+[http] Proxies/sec: Finished: 125.09, Working: 0.30, Failed: 6.73
+[http] Error distribution:
+    curl exited with code 7: 91
+    curl exited with code 56: 286
+    curl exited with code 43: 1
+    curl exited with code 35: 13
+    curl exited with code 28: 417
+[+] Working http proxy: http://8.130.34.237:5555 (8.130.34.237)
+[http] [2025-05-14T11:19:51.080Z] Concurrency: 50, Finished: 15139, Working: 37, Failed: 875 | Tested: 15139 / 16466 | Remaining: 1327
+[http] Proxies/sec: Finished: 116.45, Working: 0.28, Failed: 6.73
+[http] Error distribution:
+    curl exited with code 7: 98
+    curl exited with code 56: 312
+    curl exited with code 43: 1
+    curl exited with code 35: 13
+    curl exited with code 28: 451
+[+] Working http proxy: http://72.10.160.171:1027 (76.80.153.218)
+[+] Working http proxy: http://8.130.34.44:80 (8.130.34.44)
+[+] Working http proxy: http://115.77.165.110:10001 (115.77.135.151)
+[+] Working http proxy: http://27.79.162.190:16000 (27.79.162.190)
+[+] Working http proxy: http://47.251.87.74:1000 (47.251.87.74)
+[+] Working http proxy: http://47.91.29.151:9080 (47.91.29.151)
+[+] Working http proxy: http://103.191.250.133:8083 (103.191.250.133)
+[http] [2025-05-14T11:20:01.081Z] Concurrency: 50, Finished: 15263, Working: 44, Failed: 947 | Tested: 15263 / 16466 | Remaining: 1203
+[http] Proxies/sec: Finished: 109.02, Working: 0.31, Failed: 6.76
+[http] Error distribution:
+    curl exited with code 7: 109
+    curl exited with code 56: 336
+    curl exited with code 43: 1
+    curl exited with code 35: 13
+    curl exited with code 28: 488
+[+] Working http proxy: http://47.252.11.233:45 (47.252.11.233)
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (1405 IPs)
+[+] Working http proxy: http://115.74.1.101:10003 (115.72.2.223)
+[http] [2025-05-14T11:20:11.082Z] Concurrency: 50, Finished: 15382, Working: 46, Failed: 1008 | Tested: 15382 / 16466 | Remaining: 1084
+[http] Proxies/sec: Finished: 102.54, Working: 0.31, Failed: 6.72
+[http] Error distribution:
+    curl exited with code 7: 115
+    curl exited with code 56: 356
+    curl exited with code 43: 1
+    curl exited with code 35: 13
+    curl exited with code 28: 523
+[+] Working http proxy: http://115.74.9.156:10008 (116.102.105.143)
+[+] Working http proxy: http://8.130.34.44:9000 (8.130.34.44)
+[+] Working http proxy: http://45.182.177.81:9947 (45.182.176.38)
+[+] Working http proxy: http://164.163.73.5:999 (164.163.75.102)
+[+] Working http proxy: http://171.233.50.223:8080 (171.233.50.223)
+[+] Working http proxy: http://45.174.176.161:8088 (45.174.177.10)
+[http] [2025-05-14T11:20:21.082Z] Concurrency: 50, Finished: 15508, Working: 52, Failed: 1083 | Tested: 15508 / 16466 | Remaining: 958
+[http] Proxies/sec: Finished: 96.92, Working: 0.32, Failed: 6.77
+[http] Error distribution:
+    curl exited with code 7: 123
+    curl exited with code 56: 387
+    curl exited with code 43: 1
+    curl exited with code 35: 14
+    curl exited with code 28: 558
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (1410 IPs)
+[http] [2025-05-14T11:20:31.085Z] Concurrency: 50, Finished: 15628, Working: 52, Failed: 1160 | Tested: 15628 / 16466 | Remaining: 838
+[http] Proxies/sec: Finished: 91.92, Working: 0.31, Failed: 6.82
+[http] Error distribution:
+    curl exited with code 7: 131
+    curl exited with code 56: 411
+    curl exited with code 43: 1
+    curl exited with code 35: 14
+    curl exited with code 28: 603
+[+] Working http proxy: http://123.17.156.165:10004 (14.232.149.190)
+[+] Working http proxy: http://103.172.42.121:8086 (103.172.42.121)
+[+] Working http proxy: http://47.254.36.213:104 (47.254.36.213)
+[+] Working http proxy: http://212.110.188.204:34411 (212.110.188.204)
+[+] Working http proxy: http://183.60.141.27:443 (183.60.141.27)
+[http] [2025-05-14T11:20:41.085Z] Concurrency: 50, Finished: 15760, Working: 57, Failed: 1230 | Tested: 15760 / 16466 | Remaining: 706
+[http] Proxies/sec: Finished: 87.55, Working: 0.32, Failed: 6.83
+[http] Error distribution:
+    curl exited with code 7: 142
+    curl exited with code 56: 438
+    curl exited with code 43: 1
+    curl exited with code 35: 14
+    curl exited with code 28: 635
+[+] Working http proxy: http://103.124.137.150:20 (160.191.180.169)
+[+] Working http proxy: http://72.10.164.178:5369 (39.37.178.71)
+[+] Working http proxy: http://47.238.130.212:9080 (47.238.130.212)
+[+] Working http proxy: http://8.211.195.139:3128 (8.211.195.139)
+[http] [2025-05-14T11:20:51.085Z] Concurrency: 50, Finished: 15867, Working: 61, Failed: 1288 | Tested: 15867 / 16466 | Remaining: 599
+[http] Proxies/sec: Finished: 83.51, Working: 0.32, Failed: 6.78
+[http] Error distribution:
+    curl exited with code 7: 150
+    curl exited with code 56: 452
+    curl exited with code 43: 1
+    curl exited with code 35: 15
+    curl exited with code 28: 670
+[+] Working http proxy: http://103.154.77.35:9090 (103.154.77.35)
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (1416 IPs)
+[+] Working http proxy: http://47.251.74.38:50 (47.251.74.38)
+[http] [2025-05-14T11:21:01.085Z] Concurrency: 50, Finished: 16011, Working: 63, Failed: 1371 | Tested: 16011 / 16466 | Remaining: 455
+[http] Proxies/sec: Finished: 80.05, Working: 0.31, Failed: 6.85
+[http] Error distribution:
+    curl exited with code 7: 160
+    curl exited with code 56: 481
+    curl exited with code 43: 1
+    curl exited with code 35: 15
+    curl exited with code 28: 714
+[+] Working http proxy: http://8.211.194.85:8443 (8.211.194.85)
+[+] Working http proxy: http://169.56.21.242:8080 (169.56.21.242)
+[http] [2025-05-14T11:21:11.086Z] Concurrency: 50, Finished: 16093, Working: 65, Failed: 1429 | Tested: 16093 / 16466 | Remaining: 373
+[http] Proxies/sec: Finished: 76.63, Working: 0.31, Failed: 6.80
+[http] Error distribution:
+    curl exited with code 7: 172
+    curl exited with code 56: 490
+    curl exited with code 43: 1
+    curl exited with code 35: 15
+    curl exited with code 28: 751
+[+] Working http proxy: http://72.10.160.170:25703 (110.39.174.246)
+[+] Working http proxy: http://103.97.231.196:8080 (103.97.231.194)
+[+] Working http proxy: http://154.205.147.234:15 (154.205.147.234)
+[+] Working http proxy: http://124.105.235.199:8080 (210.213.205.101)
+[http] [2025-05-14T11:21:21.087Z] Concurrency: 50, Finished: 16170, Working: 69, Failed: 1477 | Tested: 16170 / 16466 | Remaining: 296
+[http] Proxies/sec: Finished: 73.50, Working: 0.31, Failed: 6.71
+[http] Error distribution:
+    curl exited with code 7: 175
+    curl exited with code 56: 493
+    curl exited with code 43: 1
+    curl exited with code 35: 15
+    curl exited with code 28: 793
+[+] Working http proxy: http://27.79.132.44:16000 (27.79.132.44)
+[+] Working http proxy: http://47.251.74.38:808 (47.251.74.38)
+[+] Working http proxy: http://194.67.200.211:3128 (194.67.200.211)
+[http] [2025-05-14T11:21:31.088Z] Concurrency: 50, Finished: 16241, Working: 72, Failed: 1523 | Tested: 16241 / 16466 | Remaining: 225
+[http] Proxies/sec: Finished: 70.61, Working: 0.31, Failed: 6.62
+[http] Error distribution:
+    curl exited with code 7: 182
+    curl exited with code 56: 496
+    curl exited with code 43: 1
+    curl exited with code 35: 15
+    curl exited with code 28: 829
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (1424 IPs)
+[+] Working http proxy: http://113.192.31.199:8080 (113.192.31.199)
+[+] Working http proxy: http://115.72.166.211:10008 (115.72.43.84)
+[+] Working http proxy: http://72.10.160.170:26083 (97.95.253.86)
+[+] Working http proxy: http://72.10.160.91:20877 (122.176.193.107)
+[+] Working http proxy: http://115.77.165.110:10002 (115.72.169.113)
+[+] Working http proxy: http://67.43.228.251:13361 (139.5.248.253)
+[http] [2025-05-14T11:21:41.089Z] Concurrency: 50, Finished: 16310, Working: 78, Failed: 1571 | Tested: 16310 / 16466 | Remaining: 156
+[http] Proxies/sec: Finished: 67.95, Working: 0.32, Failed: 6.55
+[http] Error distribution:
+    curl exited with code 7: 190
+    curl exited with code 56: 500
+    curl exited with code 43: 1
+    curl exited with code 35: 16
+    curl exited with code 28: 864
+[+] Working http proxy: http://72.10.160.90:19287 (49.244.255.127)
+[+] Working http proxy: http://72.10.164.178:22691 (86.98.34.17)
+[+] Working http proxy: http://72.10.160.170:29007 (203.122.13.189)
+[+] Working http proxy: http://115.74.5.9:10008 (115.77.132.52)
+[+] Working http proxy: http://67.43.228.253:2967 (49.43.100.87)
+[+] Working http proxy: http://67.43.236.20:7551 (123.24.83.70)
+[+] Working http proxy: http://118.113.247.55:2324 (118.113.247.55)
+[+] Working http proxy: http://67.43.236.20:8787 (106.213.82.79)
+[+] Working http proxy: http://67.43.236.20:5675 (103.57.133.151)
+[http] [2025-05-14T11:21:51.090Z] Concurrency: 50, Finished: 16381, Working: 87, Failed: 1613 | Tested: 16381 / 16466 | Remaining: 85
+[http] Proxies/sec: Finished: 65.52, Working: 0.35, Failed: 6.45
+[http] Error distribution:
+    curl exited with code 7: 194
+    curl exited with code 56: 501
+    curl exited with code 43: 1
+    curl exited with code 35: 16
+    curl exited with code 28: 901
+[+] Working http proxy: http://67.43.228.253:22927 (181.66.176.253)
+[+] Working http proxy: http://27.147.129.26:58080 (27.147.129.26)
+[+] Working http proxy: http://116.110.95.147:9002 (116.110.95.165)
+[+] Working http proxy: http://67.43.236.20:14233 (61.6.235.226)
+[+] Working http proxy: http://101.37.12.43:5000 (101.37.12.43)
+[+] Working http proxy: http://36.66.16.193:80 (36.66.16.193)
+[http] [2025-05-14T11:22:01.090Z] Concurrency: 13, Finished: 16453, Working: 93, Failed: 1655 | Tested: 16453 / 16466 | Remaining: 13
+[http] Proxies/sec: Finished: 63.28, Working: 0.36, Failed: 6.36
+[http] Error distribution:
+    curl exited with code 7: 195
+    curl exited with code 56: 501
+    curl exited with code 43: 1
+    curl exited with code 35: 16
+    curl exited with code 28: 942
+[http] [2025-05-14T11:22:05.473Z] Concurrency: 0, Finished: 16466, Working: 93, Failed: 1668 | Tested: 16466 / 16466 | Remaining: 0
+[http] Proxies/sec: Finished: 62.28, Working: 0.35, Failed: 6.31
+[http] Error distribution:
+    curl exited with code 7: 195
+    curl exited with code 56: 501
+    curl exited with code 43: 1
+    curl exited with code 35: 16
+    curl exited with code 28: 955
+[+] Finished processing http proxies.
+[+] Processing 3585 unique https proxies...
+[+] Working https proxy: https://103.36.11.119:8181 (103.36.11.119)
+[+] Working https proxy: https://89.46.223.201:3128 (89.46.223.201)
+[+] Working https proxy: https://27.79.252.127:16000 (27.79.252.127)
+[+] Working https proxy: https://180.248.171.172:8080 (180.248.171.172)
+[+] Working https proxy: https://115.74.1.101:10005 (171.248.200.152)
+[+] Working https proxy: https://8.213.156.191:800 (8.213.156.191)
+[+] Working https proxy: https://110.76.145.22:92 (110.76.145.22)
+[+] Working https proxy: https://123.17.156.165:10004 (14.232.149.190)
+[+] Working https proxy: https://103.133.26.75:8181 (103.28.117.142)
+[https] [2025-05-14T11:22:15.475Z] Concurrency: 50, Finished: 746, Working: 9, Failed: 23 | Tested: 746 / 3585 | Remaining: 2839
+[https] Proxies/sec: Finished: 74.60, Working: 0.90, Failed: 2.30
+[https] Error distribution:
+    curl exited with code 7: 19
+    curl exited with code 56: 2
+    curl exited with code 35: 2
+[+] Working https proxy: https://47.237.92.86:9080 (47.237.92.86)
+[+] Working https proxy: https://160.25.245.5:8080 (160.25.245.5)
+[+] Working https proxy: https://115.72.175.235:10003 (115.72.173.241)
+[+] Working https proxy: https://27.66.117.172:10006 (171.224.116.250)
+[+] Working https proxy: https://115.72.36.39:10001 (115.72.171.11)
+[+] Working https proxy: https://27.123.1.46:3128 (27.123.1.46)
+[https] [2025-05-14T11:22:25.476Z] Concurrency: 50, Finished: 1444, Working: 15, Failed: 88 | Tested: 1444 / 3585 | Remaining: 2141
+[https] Proxies/sec: Finished: 72.20, Working: 0.75, Failed: 4.40
+[https] Error distribution:
+    curl exited with code 7: 34
+    curl exited with code 56: 6
+    curl exited with code 35: 2
+    curl exited with code 28: 46
+[+] Working https proxy: https://200.208.96.194:100 (163.116.233.80)
+[+] Working https proxy: https://49.48.97.198:8080 (49.48.97.198)
+[+] Working https proxy: https://8.215.3.250:3128 (8.215.3.250)
+[+] Working https proxy: https://103.144.90.72:8082 (103.144.90.72)
+[+] Working https proxy: https://186.96.160.202:999 (186.96.160.202)
+[https] [2025-05-14T11:22:35.477Z] Concurrency: 50, Finished: 2078, Working: 20, Failed: 142 | Tested: 2078 / 3585 | Remaining: 1507
+[https] Proxies/sec: Finished: 69.26, Working: 0.67, Failed: 4.73
+[https] Error distribution:
+    curl exited with code 7: 46
+    curl exited with code 56: 10
+    curl exited with code 35: 3
+    curl exited with code 28: 83
+[+] Working https proxy: https://160.19.110.130:8082 (160.19.110.130)
+[+] Working https proxy: https://38.65.172.193:999 (38.65.172.212)
+[+] Working https proxy: https://103.251.8.135:3128 (103.19.228.235)
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (1462 IPs)
+[+] Working https proxy: https://186.96.160.204:999 (186.96.160.204)
+[https] [2025-05-14T11:22:45.477Z] Concurrency: 50, Finished: 2575, Working: 24, Failed: 191 | Tested: 2575 / 3585 | Remaining: 1010
+[https] Proxies/sec: Finished: 64.37, Working: 0.60, Failed: 4.77
+[https] Error distribution:
+    curl exited with code 7: 50
+    curl exited with code 56: 11
+    curl exited with code 35: 3
+    curl exited with code 28: 127
+[+] Working https proxy: https://103.166.158.33:8080 (103.166.158.33)
+[+] Working https proxy: https://212.33.205.55:3128 (212.33.205.55)
+[+] Working https proxy: https://149.129.255.179:80 (149.129.255.179)
+[+] Working https proxy: https://47.252.18.37:80 (47.252.18.37)
+[+] Working https proxy: https://103.39.51.73:8181 (103.39.51.73)
+[+] Working https proxy: https://122.3.41.154:8090 (180.191.49.73)
+[https] [2025-05-14T11:22:55.477Z] Concurrency: 50, Finished: 3268, Working: 30, Failed: 263 | Tested: 3268 / 3585 | Remaining: 317
+[https] Proxies/sec: Finished: 65.36, Working: 0.60, Failed: 5.26
+[https] Error distribution:
+    curl exited with code 7: 75
+    curl exited with code 56: 13
+    curl exited with code 35: 4
+    curl exited with code 28: 171
+[+] Working https proxy: https://77.221.141.44:1080 (77.221.141.44)
+[+] Working https proxy: https://115.74.9.156:10005 (115.72.4.117)
+[+] Working https proxy: https://8.211.195.139:5060 (8.211.195.139)
+[+] Working https proxy: https://95.214.123.132:8080 (95.214.123.132)
+[+] Working https proxy: https://103.156.248.26:8080 (103.156.248.26)
+[+] Working https proxy: https://190.97.231.0:999 (190.97.231.0)
+[+] Working https proxy: https://115.72.166.211:10002 (115.77.175.133)
+[https] [2025-05-14T11:23:05.477Z] Concurrency: 46, Finished: 3539, Working: 37, Failed: 309 | Tested: 3539 / 3585 | Remaining: 46
+[https] Proxies/sec: Finished: 58.98, Working: 0.62, Failed: 5.15
+[https] Error distribution:
+    curl exited with code 7: 90
+    curl exited with code 56: 25
+    curl exited with code 35: 4
+    curl exited with code 28: 190
+[+] Working https proxy: https://103.126.218.176:5058 (103.126.218.179)
+[https] [2025-05-14T11:23:15.478Z] Concurrency: 2, Finished: 3583, Working: 38, Failed: 352 | Tested: 3583 / 3585 | Remaining: 2
+[https] Proxies/sec: Finished: 51.18, Working: 0.54, Failed: 5.03
+[https] Error distribution:
+    curl exited with code 7: 90
+    curl exited with code 56: 25
+    curl exited with code 35: 4
+    curl exited with code 28: 233
+[https] [2025-05-14T11:23:15.944Z] Concurrency: 0, Finished: 3585, Working: 38, Failed: 354 | Tested: 3585 / 3585 | Remaining: 0
+[https] Proxies/sec: Finished: 50.87, Working: 0.54, Failed: 5.02
+[https] Error distribution:
+    curl exited with code 7: 90
+    curl exited with code 56: 25
+    curl exited with code 35: 4
+    curl exited with code 28: 235
+[+] Finished processing https proxies.
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (1472 IPs)
+[+] Proxy detection completed. Final results saved to /root/free-proxy-list/outputs/proxy_results.json
+    SOCKS5: 674 working, 3644 failed
+    SOCKS4: 311 working, 3401 failed
+    HTTP:   735 working, 20708 failed
+    HTTPS:  423 working, 4512 failed
+[+] Proxy detection completed.
+[Wed May 14 11:23:16 UTC 2025] detectProxies.js took 402 seconds
+[+] Updated lastUpdated.txt with current date: 2025-05-14
+[+] Saved unique working IPs to /root/free-proxy-list/proxies/ips.txt (1206 IPs)

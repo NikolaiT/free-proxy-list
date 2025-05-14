@@ -550,7 +550,6 @@ async function detectProxies() {
     detectProxies()
       .then(results => {
         console.log('[+] Proxy detection completed.');
-        writeWorkingProxiesToFiles();
         process.exitCode = 0;
       })
       .catch(error => {
