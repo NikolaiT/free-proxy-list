@@ -1418,3 +1418,13 @@ and the repository exists.
 [Thu May 15 12:25:53 UTC 2025] detectProxies.js took 397 seconds
 [+] Updated lastUpdated.txt with current date: 2025-05-15T12:25:53.806Z
 [+] Saved unique working IPs to /root/free-proxy-list/proxies/ips.txt (1293 IPs)
+[main ce6f317] Update proxy list
+ 7 files changed, 920 insertions(+), 8 deletions(-)
+To github.com:NikolaiT/free-proxy-list.git
+   f4e1b0a..ce6f317  main -> main
+[Thu May 15 12:25:55 UTC 2025] gitPush.sh took 2 seconds
+[Thu May 15 12:25:55 UTC 2025] Completed proxy detection cronjob
+[Thu May 15 02:00:01 PM UTC 2025] Starting proxy detection cronjob
+/root/free-proxy-list/cronjob.sh: line 15: node: command not found
+[Thu May 15 02:00:01 PM UTC 2025] detectProxies.js took 0 seconds
+/root/free-proxy-list/cronjob.sh: line 19: node: command not found
