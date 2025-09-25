@@ -1,0 +1,4 @@
+[Thu Sep 25 04:00:01 PM UTC 2025] Starting proxy detection cronjob
+/root/free-proxy-list/cronjob.sh: line 15: node: command not found
+[Thu Sep 25 04:00:01 PM UTC 2025] detectProxies.js took 0 seconds
+/root/free-proxy-list/cronjob.sh: line 19: node: command not found
