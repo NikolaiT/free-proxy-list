@@ -60,7 +60,11 @@ function runCurl(cmdArgs, timeoutMs) {
     timeoutHandle = setTimeout(() => {
       if (!finished) {
         finished = true;
-        try { child.kill('SIGKILL'); } catch (e) { }
+        try {
+          child.kill('SIGKILL');
+        } catch (e) {
+          // Ignore kill errors
+        }
         reject({ error: new Error('Process timed out'), stdout: stdout.trim(), stderr: stderr.trim(), killed: true });
       }
     }, timeoutMs + 500);
@@ -90,6 +94,7 @@ async function testProxy(proxyObj, currentPublicIp, useCache = true) {
         cacheIsFresh = true;
       }
     } catch (e) {
+      // Cache stat error, treat as not fresh
       cacheIsFresh = false;
     }
   }
@@ -104,18 +109,22 @@ async function testProxy(proxyObj, currentPublicIp, useCache = true) {
           proxy: normalized,
           error: "Proxy resolves to client IP, not a working proxy"
         };
-        fs.writeFileSync(cachePath, JSON.stringify(failResult, null, 2));
+        try {
+          fs.writeFileSync(cachePath, JSON.stringify(failResult, null, 2));
+        } catch (writeError) {
+          // Ignore cache write errors
+        }
         return failResult;
       }
       return cachedResult;
     } catch (error) {
-      console.log(`[-] Error reading cache for ${normalized}: ${error.message}`);
+      // Cache read error, continue with fresh test
     }
   }
 
   try {
     // Prepare curl command arguments based on proxy type
-    let curlArgs = [`--max-time`, `${TIMEOUT / 1000}`, '--silent', '-4']; // Prefer IPv4
+    let curlArgs = [`--max-time`, `${TIMEOUT / 1000}`, '--silent', '-4', '--connect-timeout', '5']; // Prefer IPv4, faster connection timeout
     if (type === 'socks5') {
       curlArgs.push('--socks5', `${host}:${port}`);
     } else if (type === 'socks4') {
@@ -142,7 +151,11 @@ async function testProxy(proxyObj, currentPublicIp, useCache = true) {
           error: "Proxy resolves to client IP, not a working proxy",
           stderr: stderr ? stderr.substring(0, 200) : undefined
         };
-        fs.writeFileSync(cachePath, JSON.stringify(failResult, null, 2));
+        try {
+          fs.writeFileSync(cachePath, JSON.stringify(failResult, null, 2));
+        } catch (writeError) {
+          // Ignore cache write errors
+        }
         return failResult;
       }
       if (!isValidIp(ip)) {
@@ -155,7 +168,11 @@ async function testProxy(proxyObj, currentPublicIp, useCache = true) {
         proxy: normalized,
         stderr: stderr ? stderr.substring(0, 200) : undefined
       };
-      fs.writeFileSync(cachePath, JSON.stringify(result, null, 2));
+      try {
+        fs.writeFileSync(cachePath, JSON.stringify(result, null, 2));
+      } catch (writeError) {
+        // Ignore cache write errors
+      }
       return result;
     } else {
       throw { error: new Error(`Request failed or returned invalid data. Response: ${response}`), stdout: response, stderr };
@@ -192,7 +209,11 @@ async function testProxy(proxyObj, currentPublicIp, useCache = true) {
       stderr: stderr ? stderr.substring(0, 200) : undefined
     };
 
-    fs.writeFileSync(cachePath, JSON.stringify(result, null, 2));
+    try {
+      fs.writeFileSync(cachePath, JSON.stringify(result, null, 2));
+    } catch (writeError) {
+      // Ignore cache write errors
+    }
     return result;
   }
 }
@@ -303,21 +324,24 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
     stats.errorHistogram = errorHistogram;
     stats.total = total;
     logStats(stats, type);
-  }, 10000);
+  }, 15000); // Reduced frequency from 10s to 15s
 
   function getErrorType(errorMsg) {
-    // Normalize error messages to a few buckets
+    // Normalize error messages to a few buckets (optimized with early returns)
     if (!errorMsg) return 'Unknown error';
-    if (errorMsg.includes('Timeout')) return 'Timeout';
-    if (errorMsg.includes('Connection refused')) return 'Connection refused';
-    if (errorMsg.includes('reset by peer')) return 'Connection reset';
-    if (errorMsg.includes('TLS connection')) return 'TLS error';
-    if (errorMsg.includes('Socket disconnected')) return 'Socket disconnected';
-    if (errorMsg.includes('DNS lookup failed')) return 'DNS lookup failed';
-    if (errorMsg.includes('proxy')) return 'Proxy error';
-    if (errorMsg.includes('Proxy resolves to client IP')) return 'Proxy resolves to client IP';
-    if (errorMsg.includes('ECONNREFUSED')) return 'ECONNREFUSED';
-    if (errorMsg.includes('Invalid IP format received')) return 'Invalid IP format';
+
+    const lowerMsg = errorMsg.toLowerCase();
+    if (lowerMsg.includes('timeout')) return 'Timeout';
+    if (lowerMsg.includes('connection refused')) return 'Connection refused';
+    if (lowerMsg.includes('reset by peer')) return 'Connection reset';
+    if (lowerMsg.includes('tls connection')) return 'TLS error';
+    if (lowerMsg.includes('socket disconnected')) return 'Socket disconnected';
+    if (lowerMsg.includes('dns lookup failed')) return 'DNS lookup failed';
+    if (lowerMsg.includes('proxy')) return 'Proxy error';
+    if (lowerMsg.includes('proxy resolves to client ip')) return 'Proxy resolves to client IP';
+    if (lowerMsg.includes('econnrefused')) return 'ECONNREFUSED';
+    if (lowerMsg.includes('invalid ip format received')) return 'Invalid IP format';
+
     return errorMsg.split(':')[0].trim().substring(0, 40); // fallback: first part of error
   }
 
@@ -328,7 +352,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
           currentResults.working.push(result);
           workingSet.add(result.proxy);
           detected++;
-          console.log(`[+] Working ${type} proxy: ${result.proxy} (${result.ip})`);
+          // Working proxy found - reduce output verbosity
         }
       } else {
         if (!failedSet.has(result.proxy)) {
@@ -345,7 +369,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
   }
 
   function onProxyTestError(err, proxyObj) {
-    console.log(`[!] Unexpected error during testProxy for ${proxyObj.normalized}: ${err.message}`);
+    // Reduce error logging verbosity
     const errorResult = { success: false, proxy: proxyObj.normalized, error: `Internal test error: ${err.message}`.substring(0, 200) };
     if (!failedSet.has(proxyObj.normalized)) {
       currentResults.failed.push(errorResult);
@@ -363,8 +387,12 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
     finished++;
     if (testedCountSinceSave >= SAVE_INTERVAL) {
       results[type] = currentResults;
-      saveResults(results, outputPath);
-      saveUniqueIpResults(results, outputDir);
+      try {
+        saveResults(results, outputPath);
+        saveUniqueIpResults(results, outputDir);
+      } catch (saveError) {
+        // Ignore save errors, continue processing
+      }
       testedCountSinceSave = 0;
     }
     if (finished >= total) {
@@ -448,7 +476,7 @@ async function detectProxies() {
       console.log('[-] Unable to continue without current public IP. Abort.');
       return;
     }
-    console.log(`[+] Current public IP detected: ${currentPublicIp}`);
+    console.log(`[+] Public IP: ${currentPublicIp}`);
   } catch (err) {
     if (err && err.message && err.message.startsWith('Invalid IP format received:')) {
       console.log(`[-] Could not determine current public IP: ${err.message}`);
@@ -462,13 +490,13 @@ async function detectProxies() {
   if (fs.existsSync(outputPath)) {
     try {
       results = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
-      console.log(`[+] Loaded existing results from ${outputPath}`);
+      console.log(`[+] Loaded existing results`);
       results.socks5 = results.socks5 || { working: [], failed: [] };
       results.socks4 = results.socks4 || { working: [], failed: [] };
       results.http = results.http || { working: [], failed: [] };
       results.https = results.https || { working: [], failed: [] };
     } catch (error) {
-      console.log(`[-] Failed to load or parse existing results: ${error.message}. Starting fresh.`);
+      console.log(`[-] Starting fresh results`);
       results = getInitialResults();
     }
   } else {
@@ -491,7 +519,7 @@ async function detectProxies() {
     try {
       content = fs.readFileSync(filePath, 'utf8');
     } catch (readError) {
-      console.log(`[-] Failed to read proxy source file ${filePath}: ${readError.message}`);
+      // Skip failed source file
       continue;
     }
     const lines = content.split('\n').map(l => l.trim()).filter(Boolean);
@@ -501,18 +529,16 @@ async function detectProxies() {
         allProxyObjs.push(norm);
       }
     }
-    console.log(`[+] Loaded ${lines.length} proxies from ${path.basename(url)} (${type})`);
+    // Reduced logging verbosity
   }
 
-  // Deduplicate proxies by normalized string
+  // Deduplicate proxies by normalized string (more efficient)
   const dedupedMap = new Map();
   for (const obj of allProxyObjs) {
-    if (!dedupedMap.has(obj.normalized)) {
-      dedupedMap.set(obj.normalized, obj);
-    }
+    dedupedMap.set(obj.normalized, obj); // Map.set() overwrites duplicates automatically
   }
   const dedupedProxies = Array.from(dedupedMap.values());
-  console.log(`[+] Total unique proxies after normalization and deduplication: ${dedupedProxies.length}`);
+  console.log(`[+] Total unique proxies: ${dedupedProxies.length}`);
 
   const proxiesByType = groupProxiesByType(dedupedProxies);
 
@@ -525,19 +551,16 @@ async function detectProxies() {
     const workingSet = new Set(currentResults.working.map(p => p.proxy));
     const failedSet = new Set(currentResults.failed.map(p => p.proxy));
 
-    console.log(`[+] Processing ${proxyObjs.length} unique ${type} proxies...`);
+    console.log(`[+] Processing ${proxyObjs.length} ${type} proxies...`);
     await processProxiesWithQueue(proxyObjs, type, currentResults, workingSet, failedSet, currentPublicIp, results, outputPath, outputDir);
-    console.log(`[+] Finished processing ${type} proxies.`);
+    console.log(`[+] ${type} proxies completed.`);
     results[type] = currentResults;
   }
 
   saveResults(results, outputPath);
   saveUniqueIpResults(results, outputDir);
-  console.log(`[+] Proxy detection completed. Final results saved to ${outputPath}`);
-  console.log(`    SOCKS5: ${results.socks5.working.length} working, ${results.socks5.failed.length} failed`);
-  console.log(`    SOCKS4: ${results.socks4.working.length} working, ${results.socks4.failed.length} failed`);
-  console.log(`    HTTP:   ${results.http.working.length} working, ${results.http.failed.length} failed`);
-  console.log(`    HTTPS:  ${results.https.working.length} working, ${results.https.failed.length} failed`);
+  console.log(`[+] Detection completed. Results saved to ${outputPath}`);
+  console.log(`    SOCKS5: ${results.socks5.working.length} working, SOCKS4: ${results.socks4.working.length} working, HTTP: ${results.http.working.length} working, HTTPS: ${results.https.working.length} working`);
   return results;
 }
 
@@ -547,22 +570,21 @@ async function detectProxies() {
     writeWorkingProxiesToFiles();
     process.exit(0);
   } else if (process.argv.includes('detectProxies')) {
-    detectProxies()
-      .then(results => {
-        console.log('[+] Proxy detection completed.');
-        process.exitCode = 0;
-      })
-      .catch(error => {
-        console.error('[-] Critical error in proxy detection process:', error);
-        process.exitCode = 1;
-      });
+    try {
+      const results = await detectProxies();
+      console.log('[+] Proxy detection completed.');
+      process.exit(0);
+    } catch (error) {
+      console.error('[-] Critical error in proxy detection process:', error);
+      process.exit(1);
+    }
   } else if (process.argv.includes('testProxy')) {
     const currentPublicIp = await getCurrentPublicIp();
     if (!isValidIp(currentPublicIp)) {
       console.log(`[-] Could not determine current public IP: Invalid IP format received: ${currentPublicIp}`);
       return;
     }
-    const testSocks5 = false;
+    const testSocks5 = false; // Set to true to test SOCKS5 proxies
     if (testSocks5) {
       const tests = [
         `socks5://45.12.132.212:51991`,
@@ -587,10 +609,13 @@ async function detectProxies() {
       'https://34.221.119.219:3128',
       'https://54.245.34.166:8000'
     ];
+    console.log(`[+] Testing ${httpsProxies.length} HTTPS proxies...`);
     for (const test of httpsProxies) {
       const norm = normalizeProxyLine(test);
-      const result = await testProxy(norm, currentPublicIp, false);
-      console.log(result);
+      if (norm) {
+        const result = await testProxy(norm, currentPublicIp, false);
+        console.log(`${test}: ${result.success ? 'SUCCESS' : 'FAILED'} - ${result.success ? result.ip : result.error}`);
+      }
     }
   } else if (process.argv.includes('isValidIp')) {
     console.log(isValidIp('2a01:4f8:1c1a:b453::1'));
