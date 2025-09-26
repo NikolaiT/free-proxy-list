@@ -506,3 +506,17 @@ To github.com:NikolaiT/free-proxy-list.git
 [+] Saved unique working IPs to /root/free-proxy-list/proxies/ips.txt (1852 IPs)
 [Fri Sep 26 15:24:53 UTC 2025] writeWorkingProxiesToFiles completed successfully in 0 seconds
 [Fri Sep 26 15:24:53 UTC 2025] Starting git push
+[main 244ddb0] Update proxy list
+ 2 files changed, 64 insertions(+), 1 deletion(-)
+To github.com:NikolaiT/free-proxy-list.git
+   8551b6a..244ddb0  main -> main
+[Fri Sep 26 15:24:55 UTC 2025] git push completed successfully in 2 seconds
+[Fri Sep 26 15:24:55 UTC 2025] Completed proxy detection cronjob
+[Fri Sep 26 04:00:01 PM UTC 2025] Starting proxy detection cronjob
+[Fri Sep 26 04:00:01 PM UTC 2025] Starting detectProxies command
+/root/free-proxy-list/cronjob.sh: line 16: node: command not found
+[Fri Sep 26 04:00:01 PM UTC 2025] detectProxies.js completed successfully in 0 seconds
+[Fri Sep 26 04:00:01 PM UTC 2025] Starting writeWorkingProxiesToFiles command
+/root/free-proxy-list/cronjob.sh: line 22: node: command not found
+[Fri Sep 26 04:00:01 PM UTC 2025] writeWorkingProxiesToFiles completed successfully in 0 seconds
+[Fri Sep 26 04:00:01 PM UTC 2025] Starting git push
