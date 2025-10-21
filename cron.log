@@ -24077,3 +24077,128 @@ To github.com:NikolaiT/free-proxy-list.git
 [+] Saved unique working IPs to /root/free-proxy-list/proxies/ips.txt (3434 IPs)
 [Tue Oct 21 02:00:04 PM UTC 2025] writeWorkingProxiesToFiles completed successfully in 0 seconds
 [Tue Oct 21 02:00:04 PM UTC 2025] Starting git push
+[main a95184a] Update proxy list
+ 2 files changed, 66 insertions(+), 1 deletion(-)
+To github.com:NikolaiT/free-proxy-list.git
+   255d14f..a95184a  main -> main
+[Tue Oct 21 02:00:06 PM UTC 2025] git push completed successfully in 2 seconds
+[Tue Oct 21 02:00:06 PM UTC 2025] Completed proxy detection cronjob
+[Tue Oct 21 04:00:01 PM UTC 2025] Starting proxy detection cronjob
+[Tue Oct 21 04:00:01 PM UTC 2025] Using Node.js command: node
+[Tue Oct 21 04:00:01 PM UTC 2025] PATH: /root/.nvm/versions/node/v23.11.0/bin:/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+[Tue Oct 21 04:00:01 PM UTC 2025] Starting detectProxies command
+[+] Public IP: 2a01:4f8:1c1a:b453::1
+[+] Loaded existing results
+[+] Downloaded https://raw.githubusercontent.com/vakhov/fresh-proxy-list/refs/heads/master/socks5.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_vakhov_fresh-proxy-list_refs_heads_master_socks5_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/TheSpeedX/PROXY-List/refs/heads/master/socks5.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_TheSpeedX_PROXY-List_refs_heads_master_socks5_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/proxifly/free-proxy-list/refs/heads/main/proxies/protocols/socks5/data.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_proxifly_free-proxy-list_refs_heads_main_proxies_protocols_socks5_data_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/hookzof/socks5_list/refs/heads/master/proxy.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_hookzof_socks5_list_refs_heads_master_proxy_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/zebbern/Proxy-Scraper/refs/heads/main/socks5.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_zebbern_Proxy-Scraper_refs_heads_main_socks5_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/refs/heads/main/socks5_checked.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_MuRongPIG_Proxy-Master_refs_heads_main_socks5_checked_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/dpangestuw/Free-Proxy/refs/heads/main/socks5_proxies.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_dpangestuw_Free-Proxy_refs_heads_main_socks5_proxies_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/vakhov/fresh-proxy-list/refs/heads/master/socks4.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_vakhov_fresh-proxy-list_refs_heads_master_socks4_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/TheSpeedX/PROXY-List/refs/heads/master/socks4.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_TheSpeedX_PROXY-List_refs_heads_master_socks4_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/proxifly/free-proxy-list/refs/heads/main/proxies/protocols/socks4/data.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_proxifly_free-proxy-list_refs_heads_main_proxies_protocols_socks4_data_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/zebbern/Proxy-Scraper/refs/heads/main/socks4.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_zebbern_Proxy-Scraper_refs_heads_main_socks4_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/refs/heads/main/socks4_checked.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_MuRongPIG_Proxy-Master_refs_heads_main_socks4_checked_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/refs/heads/master/socks4.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_Zaeem20_FREE_PROXIES_LIST_refs_heads_master_socks4_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/dpangestuw/Free-Proxy/refs/heads/main/socks4_proxies.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_dpangestuw_Free-Proxy_refs_heads_main_socks4_proxies_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/vakhov/fresh-proxy-list/refs/heads/master/http.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_vakhov_fresh-proxy-list_refs_heads_master_http_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/TheSpeedX/PROXY-List/refs/heads/master/http.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_TheSpeedX_PROXY-List_refs_heads_master_http_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/proxifly/free-proxy-list/refs/heads/main/proxies/protocols/http/data.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_proxifly_free-proxy-list_refs_heads_main_proxies_protocols_http_data_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/zebbern/Proxy-Scraper/refs/heads/main/http.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_zebbern_Proxy-Scraper_refs_heads_main_http_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/refs/heads/main/http_checked.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_MuRongPIG_Proxy-Master_refs_heads_main_http_checked_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/refs/heads/master/http.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_Zaeem20_FREE_PROXIES_LIST_refs_heads_master_http_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/dpangestuw/Free-Proxy/refs/heads/main/http_proxies.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_dpangestuw_Free-Proxy_refs_heads_main_http_proxies_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/vakhov/fresh-proxy-list/refs/heads/master/https.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_vakhov_fresh-proxy-list_refs_heads_master_https_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/proxifly/free-proxy-list/refs/heads/main/proxies/protocols/https/data.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_proxifly_free-proxy-list_refs_heads_main_proxies_protocols_https_data_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/zebbern/Proxy-Scraper/refs/heads/main/https.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_zebbern_Proxy-Scraper_refs_heads_main_https_txt.txt
+[+] Downloaded https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/refs/heads/master/https.txt to /root/free-proxy-list/cache/raw_githubusercontent_com_Zaeem20_FREE_PROXIES_LIST_refs_heads_master_https_txt.txt
+[+] Total unique proxies: 90049
+[+] Processing 2908 socks5 proxies...
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (4304 IPs)
+[socks5] [2025-10-21T16:00:24.045Z] Concurrency: 50, Finished: 2787, Working: 9, Failed: 345 | Tested: 2787 / 2908 | Remaining: 121
+[socks5] Proxies/sec: Finished: 185.78, Working: 0.60, Failed: 23.00
+[socks5] Error distribution:
+    curl exited with code 97: 232
+    curl exited with code 28: 93
+    curl exited with code 7: 16
+    curl exited with code 35: 4
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (4314 IPs)
+[socks5] [2025-10-21T16:00:31.784Z] Concurrency: 0, Finished: 2908, Working: 16, Failed: 399 | Tested: 2908 / 2908 | Remaining: 0
+[socks5] Proxies/sec: Finished: 127.87, Working: 0.70, Failed: 17.55
+[socks5] Error distribution:
+    curl exited with code 97: 241
+    curl exited with code 28: 138
+    curl exited with code 7: 16
+    curl exited with code 35: 4
+[+] socks5 proxies completed.
+[+] Processing 3892 socks4 proxies...
+[socks4] [2025-10-21T16:00:46.812Z] Concurrency: 50, Finished: 2575, Working: 3, Failed: 126 | Tested: 2575 / 3892 | Remaining: 1317
+[socks4] Proxies/sec: Finished: 171.66, Working: 0.20, Failed: 8.40
+[socks4] Error distribution:
+    curl exited with code 7: 9
+    curl exited with code 60: 4
+    curl exited with code 28: 100
+    curl exited with code 97: 13
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (4319 IPs)
+[socks4] [2025-10-21T16:01:01.814Z] Concurrency: 50, Finished: 3554, Working: 4, Failed: 347 | Tested: 3554 / 3892 | Remaining: 338
+[socks4] Proxies/sec: Finished: 118.45, Working: 0.13, Failed: 11.57
+[socks4] Error distribution:
+    curl exited with code 7: 21
+    curl exited with code 60: 5
+    curl exited with code 28: 250
+    curl exited with code 97: 71
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (4319 IPs)
+[socks4] [2025-10-21T16:01:07.436Z] Concurrency: 0, Finished: 3892, Working: 4, Failed: 420 | Tested: 3892 / 3892 | Remaining: 0
+[socks4] Proxies/sec: Finished: 109.25, Working: 0.11, Failed: 11.79
+[socks4] Error distribution:
+    curl exited with code 7: 23
+    curl exited with code 60: 6
+    curl exited with code 28: 318
+    curl exited with code 97: 73
+[+] socks4 proxies completed.
+[+] Processing 42838 http proxies...
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (4334 IPs)
+[http] [2025-10-21T16:01:22.512Z] Concurrency: 44, Finished: 42794, Working: 24, Failed: 281 | Tested: 42794 / 42838 | Remaining: 44
+[http] Proxies/sec: Finished: 2852.93, Working: 1.60, Failed: 18.73
+[http] Error distribution:
+    curl exited with code 56: 160
+    curl exited with code 7: 32
+    curl exited with code 28: 83
+    curl exited with code 43: 1
+    curl exited with code 35: 5
+[http] [2025-10-21T16:01:28.527Z] Concurrency: 0, Finished: 42838, Working: 25, Failed: 324 | Tested: 42838 / 42838 | Remaining: 0
+[http] Proxies/sec: Finished: 2038.45, Working: 1.19, Failed: 15.42
+[http] Error distribution:
+    curl exited with code 56: 165
+    curl exited with code 7: 32
+    curl exited with code 28: 119
+    curl exited with code 43: 1
+    curl exited with code 35: 7
+[+] http proxies completed.
+[+] Processing 40411 https proxies...
+[https] [2025-10-21T16:01:37.243Z] Concurrency: 0, Finished: 40411, Working: 8, Failed: 60 | Tested: 40411 / 40411 | Remaining: 0
+[https] Proxies/sec: Finished: 4653.50, Working: 0.92, Failed: 6.91
+[https] Error distribution:
+    curl exited with code 7: 10
+    curl exited with code 56: 6
+    curl exited with code 35: 4
+    curl exited with code 28: 40
+[+] https proxies completed.
+[+] Intermediate results saved to /root/free-proxy-list/outputs/proxy_results.json
+[+] Saved unique working IPs to /root/free-proxy-list/outputs/unique_working_ips.txt (4343 IPs)
+[+] Detection completed. Results saved to /root/free-proxy-list/outputs/proxy_results.json
+    SOCKS5: 1217 working, SOCKS4: 529 working, HTTP: 3826 working, HTTPS: 2516 working
+[+] Proxy detection completed.
+[Tue Oct 21 04:01:37 PM UTC 2025] detectProxies.js completed successfully in 96 seconds
+[Tue Oct 21 04:01:37 PM UTC 2025] Starting writeWorkingProxiesToFiles command
+[+] Updated lastUpdated.txt with current date: 2025-10-21T16:01:38.144Z
+[+] Saved unique working IPs to /root/free-proxy-list/proxies/ips.txt (3449 IPs)
+[Tue Oct 21 04:01:38 PM UTC 2025] writeWorkingProxiesToFiles completed successfully in 1 seconds
+[Tue Oct 21 04:01:38 PM UTC 2025] Starting git push
