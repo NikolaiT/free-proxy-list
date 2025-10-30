@@ -1,0 +1,6 @@
+.git/
+TODO.md
+cache/
+outputs/
+proxies/
+results_cache/
