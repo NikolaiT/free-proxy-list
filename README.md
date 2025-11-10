@@ -16,6 +16,8 @@ Testing a socks5 proxy:
 ```bash
 curl https://httpbin.org/ip --socks5 45.12.132.212:51991
 curl https://api.ipapi.is/ip --socks5 51.210.111.216:47878
+curl https://api.ipapi.is/ip --socks5 121.169.46.116:1090
+curl https://engine.proxydetect.live/test --socks5 121.169.46.116:1090
 ```
 
 Testing a socks4 proxy:
@@ -30,4 +32,5 @@ Testing a http proxy:
 ```bash
 curl -x http://54.245.34.166:8000 https://api.ipapi.is/ip -k
 curl -x http://200.208.96.194:443 https://icanhazip.com/ -k
+curl -x 8.243.197.200:999 https://engine.proxydetect.live/test -k
 ```
