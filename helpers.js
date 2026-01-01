@@ -1,14 +1,9 @@
-import fs from 'fs';
-import path from 'path';
-import { exec } from 'child_process';
-import { fileURLToPath } from 'url';
-import os from 'os';
-import net from 'net';
-import { socks5sources, socks4sources, httpSources, httpsSources } from './proxySources.js';
-
-// Fix for __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const fs = require('fs');
+const path = require('path');
+const { exec } = require('child_process');
+const os = require('os');
+const net = require('net');
+const { socks5sources, socks4sources, httpSources, httpsSources } = require('./proxySources.js');
 
 const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36";
 const CACHE_DIR = path.join(__dirname, 'cache');
@@ -481,9 +476,7 @@ process.on('unhandledRejection', (reason, promise) => {
   }
 });
 
-export {
-  __filename,
-  __dirname,
+module.exports = {
   userAgent,
   TIMEOUT,
   CONCURRENCY,

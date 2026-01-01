@@ -60,7 +60,7 @@ const httpsSources = [
   'https://raw.githubusercontent.com/ErcinDedeoglu/proxies/refs/heads/main/proxies/https.txt',
 ];
 
-export {
+module.exports = {
   socks5sources,
   socks4sources,
   httpSources,

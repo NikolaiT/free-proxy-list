@@ -1,8 +1,8 @@
-import fs from 'fs';
-import path from 'path';
-import { spawn } from 'child_process';
-import { socks5sources, socks4sources, httpSources, httpsSources } from './proxySources.js';
-import {
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
+const { socks5sources, socks4sources, httpSources, httpsSources } = require('./proxySources.js');
+const {
   downloadSource,
   getCurrentPublicIp,
   normalizeProxyLine,
@@ -13,12 +13,10 @@ import {
   RESULTS_CACHE_DIR,
   saveResults,
   saveUniqueIpResults,
-  __filename,
-  __dirname,
   writeWorkingProxiesToFiles,
   isValidIp,
   convertSourceLine
-} from './helpers.js';
+} = require('./helpers.js');
 
 const { readFile, writeFile, stat } = fs.promises;
 
@@ -704,6 +702,15 @@ async function detectProxies() {
   return results;
 }
 
+async function updateFreeProxyList() {
+  await detectProxies();
+  console.log('[+] Proxy detection completed. Writing working proxies to files and exporting all proxies to CSV.');
+  writeWorkingProxiesToFiles();
+  exportAllProxiesCsv();
+  console.log('[+] All completed.');
+  process.exit(0);
+}
+
 (async () => {
   // CLI entrypoints
   if (process.argv.includes('writeWorkingProxiesToFiles')) {
@@ -772,3 +779,7 @@ async function detectProxies() {
     console.log(isValidIp(myIp), myIp);
   }
 })();
+
+module.exports = {
+  updateFreeProxyList
+};
