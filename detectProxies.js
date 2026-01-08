@@ -708,7 +708,7 @@ async function updateFreeProxyList() {
   writeWorkingProxiesToFiles();
   exportAllProxiesCsv();
   console.log('[+] All completed.');
-  process.exit(0);
+  return { status: 'UPDATE_SUCCESS', message: 'Free proxy list updated successfully', error: null };
 }
 
 (async () => {
