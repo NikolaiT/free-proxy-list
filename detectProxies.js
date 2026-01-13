@@ -298,71 +298,39 @@ function formatErrorLabel(bucket) {
   return bucket;
 }
 
-function logStats(stats, type) {
+function logStats(stats, type, final = false) {
+  // Only log final summary, not intermediate stats
+  if (!final) return;
+
   const now = Date.now();
   const elapsed = Math.max((now - stats.startTime) / 1000, 0.001);
-  const finished = stats.finished;
-  const newWorking = stats.detected || 0;
-  const newFailed = stats.failed || 0;
-  const totalWorking = stats.totalWorking !== undefined ? stats.totalWorking : newWorking;
-  const totalFailed = stats.totalFailed !== undefined ? stats.totalFailed : newFailed;
-  const concurrency = stats.active;
-  const total = stats.total !== undefined ? stats.total : undefined;
-  const finishedPerSec = (finished / elapsed).toFixed(2);
-  const workingPerSec = (newWorking / elapsed).toFixed(2);
-  const failedPerSec = (newFailed / elapsed).toFixed(2);
+  const totalWorking = stats.totalWorking !== undefined ? stats.totalWorking : (stats.detected || 0);
+  const totalFailed = stats.totalFailed !== undefined ? stats.totalFailed : (stats.failed || 0);
+  const total = stats.total !== undefined ? stats.total : 0;
+  const finishedPerSec = (stats.finished / elapsed).toFixed(1);
 
-  const workingDisplay = newWorking > 0 ? `${totalWorking} (+${newWorking})` : `${totalWorking}`;
-  const failedDisplay = newFailed > 0 ? `${totalFailed} (+${newFailed})` : `${totalFailed}`;
-
-  let testedMsg = '';
-  if (typeof total === 'number') {
-    const remaining = Math.max(total - finished, 0);
-    testedMsg = ` | Tested: ${finished} / ${total} | Remaining: ${remaining}`;
-  }
-
-  const timestamp = new Date().toISOString();
-  console.log(`[${type}] [${timestamp}] Concurrency: ${concurrency}, Finished: ${finished}, Working: ${workingDisplay}, Failed: ${failedDisplay}${testedMsg}`);
-  console.log(`[${type}] Proxies/sec: Finished: ${finishedPerSec}, Working: ${workingPerSec}, Failed: ${failedPerSec}`);
-
-  if (stats.errorHistogram) {
-    const totalErrors = Object.values(stats.errorHistogram).reduce((a, b) => a + b, 0);
-    if (totalErrors > 0) {
-      console.log(`[${type}] Error distribution:`);
-      for (const [errType, count] of Object.entries(stats.errorHistogram)) {
-        console.log(`    ${formatErrorLabel(errType)}: ${count}`);
-      }
-    }
-  }
+  console.log(`[${type}] Tested ${stats.finished}/${total} -> ${totalWorking} working, ${totalFailed} failed (${finishedPerSec}/sec)`);
 }
 
 async function loadProxiesFromSource({ url, type }) {
-  const filename = path.basename(url);
   const proxies = [];
 
   const filePath = await downloadSource(url);
   if (!filePath) {
-    console.warn(`[-] Failed to download ${url}`);
-    return { type, proxies };
+    return { type, proxies, error: 'download failed' };
   }
 
   let content;
   try {
     content = await readFile(filePath, 'utf8');
   } catch (readError) {
-    console.warn(`[-] Failed to read ${filePath}: ${readError.message}`);
-    return { type, proxies };
+    return { type, proxies, error: readError.message };
   }
 
   const lines = content.split(/\r?\n/);
   for (let i = 0; i < lines.length; i++) {
     const conversion = convertSourceLine(lines[i], type, url);
-    if (conversion.skip) {
-      continue;
-    }
-    if (conversion.error) {
-      const offendingLine = conversion.raw || lines[i].trim();
-      console.warn(`[-] Skipped invalid entry from ${filename}:${i + 1} (${type}) -> ${conversion.error}. Line: ${offendingLine}`);
+    if (conversion.skip || conversion.error) {
       continue;
     }
     const norm = normalizeProxyLine(conversion.value, type);
@@ -371,7 +339,6 @@ async function loadProxiesFromSource({ url, type }) {
     }
   }
 
-  console.log(`[+] ${filename} (${type}) -> ${proxies.length} candidates`);
   return { type, proxies };
 }
 
@@ -444,11 +411,6 @@ async function exportAllProxiesCsv() {
   const outputPath = path.join(__dirname, 'all_proxies.csv');
   fs.writeFileSync(outputPath, rows.join('\n'), 'utf8');
 
-  console.log(`[+] Wrote ${dedupedProxies.length} unique proxies to ${outputPath}`);
-  for (const [type, count] of Object.entries(counts)) {
-    console.log(`    ${type}: ${count}`);
-  }
-
   return { outputPath, total: dedupedProxies.length, counts };
 }
 
@@ -473,9 +435,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
     proxiesToTest.push(candidate);
   }
 
-  if (alreadyKnown > 0) {
-    console.log(`[${type}] Skipping ${alreadyKnown} proxies already tested.`);
-  }
+  // Silently skip already-tested proxies
 
   const total = proxiesToTest.length;
   const stats = {
@@ -491,9 +451,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
   };
 
   if (total === 0) {
-    stats.totalWorking = totalWorkingCount;
-    stats.totalFailed = totalFailedCount;
-    logStats(stats, type);
+    // No new proxies to test, skip silently
     return;
   }
 
@@ -530,15 +488,6 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
         workingSet.add(result.proxy);
         detected++;
         totalWorkingCount++;
-
-        // Extract IP, port, and type from the proxy result
-        const proxyParts = result.proxy.split('://');
-        const protocol = proxyParts[0];
-        const hostPort = proxyParts[1];
-        const [ip, port] = hostPort.split(':');
-
-        // Print colorful message for found proxy
-        console.log(`\x1b[32m+++ found proxy:\x1b[0m \x1b[33m${ip}\x1b[0m, \x1b[33m${port}\x1b[0m, \x1b[36m${protocol}\x1b[0m`);
       }
     } else {
       if (!failedSet.has(result.proxy)) {
@@ -577,16 +526,8 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
     testedCountSinceSave = 0;
   }
 
-  const logInterval = setInterval(() => {
-    stats.active = active;
-    stats.finished = finished;
-    stats.detected = detected;
-    stats.failed = failed;
-    stats.errorHistogram = errorHistogram;
-    stats.totalWorking = totalWorkingCount;
-    stats.totalFailed = totalFailedCount;
-    logStats(stats, type);
-  }, LOG_INTERVAL_MS);
+  // Disabled interval logging for less verbose output
+  const logInterval = null;
 
   const workerCount = Math.min(CONCURRENCY, total);
   const workers = Array.from({ length: workerCount }, async () => {
@@ -613,7 +554,6 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
 
   await Promise.all(workers);
 
-  clearInterval(logInterval);
   persistIfNeeded(true);
   stats.active = active;
   stats.finished = finished;
@@ -622,7 +562,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
   stats.errorHistogram = errorHistogram;
   stats.totalWorking = totalWorkingCount;
   stats.totalFailed = totalFailedCount;
-  logStats(stats, type);
+  logStats(stats, type, true);  // Only log final summary
 }
 
 
@@ -638,17 +578,11 @@ async function detectProxies() {
   try {
     currentPublicIp = await getCurrentPublicIp();
     if (!isValidIp(currentPublicIp)) {
-      console.log(`[-] Could not determine current public IP: Invalid IP format received: ${currentPublicIp}`);
-      console.log('[-] Unable to continue without current public IP. Abort.');
+      console.log(`[-] Could not determine current public IP. Abort.`);
       return;
     }
-    console.log(`[+] Public IP: ${currentPublicIp}`);
   } catch (err) {
-    if (err && err.message && err.message.startsWith('Invalid IP format received:')) {
-      console.log(`[-] Could not determine current public IP: ${err.message}`);
-    } else {
-      console.log('[-] Unable to continue without current public IP. Abort.');
-    }
+    console.log('[-] Unable to continue without current public IP. Abort.');
     return;
   }
 
@@ -656,13 +590,11 @@ async function detectProxies() {
   if (fs.existsSync(outputPath)) {
     try {
       results = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
-      console.log(`[+] Loaded existing results`);
       results.socks5 = results.socks5 || { working: [], failed: [] };
       results.socks4 = results.socks4 || { working: [], failed: [] };
       results.http = results.http || { working: [], failed: [] };
       results.https = results.https || { working: [], failed: [] };
     } catch (error) {
-      console.log(`[-] Starting fresh results`);
       results = getInitialResults();
     }
   } else {
@@ -678,7 +610,7 @@ async function detectProxies() {
   ];
 
   const { combinedCount, dedupedProxies, proxiesByType } = await loadAndNormalizeSources(allSources);
-  console.log(`[+] Loaded ${combinedCount} proxy entries, ${dedupedProxies.length} unique after normalization.`);
+  console.log(`[proxy-list] Loaded ${dedupedProxies.length} unique proxies from ${allSources.length} sources`);
 
   // Process proxies by type
   for (const type of ['socks5', 'socks4', 'http', 'https']) {
@@ -689,25 +621,23 @@ async function detectProxies() {
     const workingSet = new Set(currentResults.working.map(p => p.proxy));
     const failedSet = new Set(currentResults.failed.map(p => p.proxy));
 
-    console.log(`[+] Processing ${proxyObjs.length} ${type} proxies...`);
     await processProxiesWithQueue(proxyObjs, type, currentResults, workingSet, failedSet, currentPublicIp, results, outputPath, outputDir);
-    console.log(`[+] ${type} proxies completed.`);
     results[type] = currentResults;
   }
 
   saveResults(results, outputPath);
   saveUniqueIpResults(results, outputDir);
-  console.log(`[+] Detection completed. Results saved to ${outputPath}`);
-  console.log(`    SOCKS5: ${results.socks5.working.length} working, SOCKS4: ${results.socks4.working.length} working, HTTP: ${results.http.working.length} working, HTTPS: ${results.https.working.length} working`);
+
+  // Print final summary
+  const totalWorking = results.socks5.working.length + results.socks4.working.length + results.http.working.length + results.https.working.length;
+  console.log(`[proxy-list] Complete: ${totalWorking} working (socks5: ${results.socks5.working.length}, socks4: ${results.socks4.working.length}, http: ${results.http.working.length}, https: ${results.https.working.length})`);
   return results;
 }
 
 async function updateFreeProxyList() {
   await detectProxies();
-  console.log('[+] Proxy detection completed. Writing working proxies to files and exporting all proxies to CSV.');
   writeWorkingProxiesToFiles();
-  exportAllProxiesCsv();
-  console.log('[+] All completed.');
+  await exportAllProxiesCsv();
   return { status: 'UPDATE_SUCCESS', message: 'Free proxy list updated successfully', error: null };
 }
 

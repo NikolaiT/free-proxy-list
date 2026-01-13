@@ -62,7 +62,6 @@ async function downloadSource(url) {
   }
 
   if (cacheValid) {
-    console.log(`[+] Using cached proxy source for ${url} at ${cachePath}`);
     return cachePath;
   }
 
@@ -72,15 +71,12 @@ async function downloadSource(url) {
     try {
       fs.utimesSync(cachePath, new Date(), new Date());
     } catch (e) { }
-    console.log(`[+] Downloaded ${url} to ${cachePath}`);
     return cachePath;
   } catch (error) {
     if (fs.existsSync(cachePath)) {
       // If download failed but cache exists, use stale cache as fallback
-      console.log(`[!] Failed to download ${url}, using stale cache at ${cachePath}: ${error.message}`);
       return cachePath;
     }
-    console.log(`[-] Failed to download ${url}: ${error.message}`);
     return null;
   }
 }
