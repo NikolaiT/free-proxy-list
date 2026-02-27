@@ -516,6 +516,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
     try {
       saveResults(results, outputPath);
       saveUniqueIpResults(results, outputDir);
+      exportRankedProxiesForScrapeApi(results);
     } catch (saveError) {
       // ignore persistence errors
     }
@@ -603,7 +604,8 @@ async function detectProxies() {
   ];
 
   const { combinedCount, dedupedProxies, proxiesByType } = await loadAndNormalizeSources(allSources);
-  console.log(`[proxy-list] Loaded ${dedupedProxies.length} unique proxies from ${allSources.length} sources`);
+  const typeCounts = Object.entries(proxiesByType).map(([t, arr]) => `${t}: ${arr.length}`).join(' | ');
+  console.log(`[proxy-list] Loaded ${dedupedProxies.length} unique proxies from ${allSources.length} sources (${combinedCount} raw, ${typeCounts})`);
 
   // Process proxies by type
   for (const type of ['socks5', 'socks4', 'http', 'https']) {
