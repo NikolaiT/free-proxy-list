@@ -358,7 +358,6 @@ function saveResults(results, outputPath) {
   try {
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, JSON.stringify(results, null, 2));
-    console.log(`[+] Intermediate results saved to ${outputPath}`);
   } catch (error) {
     console.log(`[-] Error saving results to ${outputPath}: ${error.message}`);
   }
@@ -381,7 +380,7 @@ function saveUniqueIpResults(results, outputDir) {
     const uniqueIps = Array.from(ipSet);
     const outputPath = path.join(outputDir, 'unique_working_ips.txt');
     fs.writeFileSync(outputPath, uniqueIps.join('\n'), 'utf8');
-    console.log(`[+] Saved unique working IPs to ${outputPath} (${uniqueIps.length} IPs)`);
+    // silent save
   } catch (error) {
     console.log(`[-] Error saving unique IP results: ${error.message}`);
   }

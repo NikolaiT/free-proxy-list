@@ -522,8 +522,13 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
     testedCountSinceSave = 0;
   }
 
-  // Disabled interval logging for less verbose output
-  const logInterval = null;
+  const latencies = [];
+
+  const progressInterval = setInterval(() => {
+    const elapsed = ((Date.now() - stats.startTime) / 1000).toFixed(0);
+    const rate = (finished / Math.max(elapsed, 1)).toFixed(1);
+    process.stdout.write(`\r[${type}] ${finished}/${total} tested | ${totalWorkingCount} working | ${totalFailedCount} failed | ${rate}/s | ${elapsed}s`);
+  }, 2000);
 
   const workerCount = Math.min(CONCURRENCY, total);
   const workers = Array.from({ length: workerCount }, async () => {
@@ -536,8 +541,11 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
       const proxyObj = proxiesToTest[currentIndex];
       active++;
       try {
-        const result = await testProxy(proxyObj, currentPublicIp);
+        const result = await testProxy(proxyObj, currentPublicIp, false);
         recordResult(result);
+        if (result.success && result.latencyMs) {
+          latencies.push(result.latencyMs);
+        }
       } catch (err) {
         recordInternalError(err, proxyObj);
       } finally {
@@ -549,16 +557,18 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
   });
 
   await Promise.all(workers);
+  clearInterval(progressInterval);
 
   persistIfNeeded(true);
-  stats.active = active;
-  stats.finished = finished;
-  stats.detected = detected;
-  stats.failed = failed;
-  stats.errorHistogram = errorHistogram;
-  stats.totalWorking = totalWorkingCount;
-  stats.totalFailed = totalFailedCount;
-  logStats(stats, type, true);  // Only log final summary
+
+  const avgLatency = latencies.length > 0 ? (latencies.reduce((a, b) => a + b, 0) / latencies.length).toFixed(0) : '-';
+  const sorted = latencies.slice().sort((a, b) => a - b);
+  const medianLatency = sorted.length > 0 ? sorted[Math.floor(sorted.length / 2)] : '-';
+  const minLatency = sorted.length > 0 ? sorted[0] : '-';
+  const maxLatency = sorted.length > 0 ? sorted[sorted.length - 1] : '-';
+  const elapsed = ((Date.now() - stats.startTime) / 1000).toFixed(1);
+
+  process.stdout.write(`\r[${type}] ${finished}/${total} tested | ${totalWorkingCount} working | ${totalFailedCount} failed | ${elapsed}s | avg ${avgLatency}ms med ${medianLatency}ms min ${minLatency}ms max ${maxLatency}ms\n`);
 }
 
 
@@ -582,20 +592,7 @@ async function detectProxies() {
     return;
   }
 
-  // Load previous results if available
-  if (fs.existsSync(outputPath)) {
-    try {
-      results = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
-      results.socks5 = results.socks5 || { working: [], failed: [] };
-      results.socks4 = results.socks4 || { working: [], failed: [] };
-      results.http = results.http || { working: [], failed: [] };
-      results.https = results.https || { working: [], failed: [] };
-    } catch (error) {
-      results = getInitialResults();
-    }
-  } else {
-    results = getInitialResults();
-  }
+  results = getInitialResults();
 
   // Gather all proxy sources
   const allSources = [
@@ -624,9 +621,27 @@ async function detectProxies() {
   saveResults(results, outputPath);
   saveUniqueIpResults(results, outputDir);
 
-  // Print final summary
-  const totalWorking = results.socks5.working.length + results.socks4.working.length + results.http.working.length + results.https.working.length;
-  console.log(`[proxy-list] Complete: ${totalWorking} working (socks5: ${results.socks5.working.length}, socks4: ${results.socks4.working.length}, http: ${results.http.working.length}, https: ${results.https.working.length})`);
+  const allLatencies = [];
+  const counts = {};
+  for (const type of ['socks5', 'socks4', 'http', 'https']) {
+    const w = results[type].working;
+    counts[type] = w.length;
+    for (const entry of w) {
+      if (entry.latencyMs) allLatencies.push(entry.latencyMs);
+    }
+  }
+  const totalWorking = counts.socks5 + counts.socks4 + counts.http + counts.https;
+  const totalFailed = results.socks5.failed.length + results.socks4.failed.length + results.http.failed.length + results.https.failed.length;
+  const totalTested = totalWorking + totalFailed;
+
+  const sorted = allLatencies.slice().sort((a, b) => a - b);
+  const avg = sorted.length ? (sorted.reduce((a, b) => a + b, 0) / sorted.length).toFixed(0) : '-';
+  const med = sorted.length ? sorted[Math.floor(sorted.length / 2)] : '-';
+
+  console.log(`\n[proxy-list] Done: ${totalTested} tested, ${totalWorking} working, ${totalFailed} failed`);
+  console.log(`[proxy-list] http: ${counts.http} | https: ${counts.https} | socks5: ${counts.socks5} | socks4: ${counts.socks4}`);
+  console.log(`[proxy-list] Latency: avg ${avg}ms, median ${med}ms, min ${sorted[0] || '-'}ms, max ${sorted[sorted.length - 1] || '-'}ms`);
+
   return results;
 }
 
@@ -637,7 +652,7 @@ function exportRankedProxiesForScrapeApi(results) {
   for (const type of ['http', 'https', 'socks5', 'socks4']) {
     const working = (results[type] && results[type].working) || [];
     for (const entry of working) {
-      if (!entry.proxy || !entry.ip) continue;
+      if (!entry.proxy || !entry.ip || !entry.latencyMs) continue;
       const parts = entry.proxy.match(/^(\w+):\/\/(.+):(\d+)$/);
       if (!parts) continue;
       ranked.push({
@@ -645,12 +660,12 @@ function exportRankedProxiesForScrapeApi(results) {
         host: parts[2],
         port: parseInt(parts[3], 10),
         exitIp: entry.ip,
-        latencyMs: entry.latencyMs || null,
+        latencyMs: entry.latencyMs,
       });
     }
   }
 
-  ranked.sort((a, b) => (a.latencyMs || 99999) - (b.latencyMs || 99999));
+  ranked.sort((a, b) => a.latencyMs - b.latencyMs);
 
   const output = {
     generatedAt: new Date().toISOString(),
