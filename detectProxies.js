@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 const { socks5sources, socks4sources, httpSources, httpsSources } = require('./proxySources.js');
 const {
   downloadSource,
@@ -159,12 +159,12 @@ async function testProxy(proxyObj, currentPublicIp, useCache = true) {
     }
     curlArgs.push(TEST_URL);
 
+    const t0 = Date.now();
     const { stdout: response, stderr } = await runCurl(curlArgs, TIMEOUT);
+    const latencyMs = Date.now() - t0;
 
-    // Check if response is a valid IP address (IPv4 or IPv6)
     if (response) {
       const ip = response.trim();
-      // If proxy resolves to our own IP, it's not a working proxy
       if (ip === currentPublicIp) {
         const failResult = {
           success: false,
@@ -174,26 +174,22 @@ async function testProxy(proxyObj, currentPublicIp, useCache = true) {
         };
         try {
           await writeFile(cachePath, JSON.stringify(failResult, null, 2));
-        } catch (writeError) {
-          // Ignore cache write errors
-        }
+        } catch (writeError) { }
         return failResult;
       }
       if (!isValidIp(ip)) {
-        // Not a valid IP, treat as error
         throw { error: new Error(`Invalid IP format received: ${ip}`), stdout: response, stderr };
       }
       const result = {
         success: true,
         ip,
         proxy: normalized,
+        latencyMs,
         stderr: stderr ? stderr.substring(0, 200) : undefined
       };
       try {
         await writeFile(cachePath, JSON.stringify(result, null, 2));
-      } catch (writeError) {
-        // Ignore cache write errors
-      }
+      } catch (writeError) { }
       return result;
     } else {
       throw { error: new Error(`Request failed or returned invalid data. Response: ${response}`), stdout: response, stderr };
@@ -634,36 +630,69 @@ async function detectProxies() {
   return results;
 }
 
+function exportRankedProxiesForScrapeApi(results) {
+  const SCRAPEAPI_PROXY_FILE = path.join(__dirname, '..', 'scrapeapi.dev', 'ranked_proxies.json');
+
+  const ranked = [];
+  for (const type of ['http', 'https', 'socks5', 'socks4']) {
+    const working = (results[type] && results[type].working) || [];
+    for (const entry of working) {
+      if (!entry.proxy || !entry.ip) continue;
+      const parts = entry.proxy.match(/^(\w+):\/\/(.+):(\d+)$/);
+      if (!parts) continue;
+      ranked.push({
+        scheme: parts[1],
+        host: parts[2],
+        port: parseInt(parts[3], 10),
+        exitIp: entry.ip,
+        latencyMs: entry.latencyMs || null,
+      });
+    }
+  }
+
+  ranked.sort((a, b) => (a.latencyMs || 99999) - (b.latencyMs || 99999));
+
+  const output = {
+    generatedAt: new Date().toISOString(),
+    count: ranked.length,
+    proxies: ranked,
+  };
+
+  try {
+    fs.writeFileSync(SCRAPEAPI_PROXY_FILE, JSON.stringify(output, null, 2));
+    console.log(`[proxy-list] Exported ${ranked.length} ranked proxies to ${SCRAPEAPI_PROXY_FILE}`);
+  } catch (err) {
+    console.error(`[proxy-list] Failed to write ranked proxies: ${err.message}`);
+  }
+}
+
 async function updateFreeProxyList() {
-  await detectProxies();
+  const results = await detectProxies();
   writeWorkingProxiesToFiles();
   await exportAllProxiesCsv();
+  if (results) {
+    exportRankedProxiesForScrapeApi(results);
+  }
+
+  try {
+    execSync('git add . && git commit -m "auto commit (I am lazy)" && git push origin main', {
+      cwd: __dirname,
+      stdio: 'inherit',
+      timeout: 30000,
+    });
+    console.log('[proxy-list] Repository pushed successfully');
+  } catch (err) {
+    console.error('[proxy-list] Git push failed:', err.message);
+  }
+
   return { status: 'UPDATE_SUCCESS', message: 'Free proxy list updated successfully', error: null };
 }
 
 (async () => {
   // CLI entrypoints
-  if (process.argv.includes('writeWorkingProxiesToFiles')) {
-    writeWorkingProxiesToFiles();
+  if (process.argv.includes('updateFreeProxyList')) {
+    await updateFreeProxyList();
     process.exit(0);
-  } else if (process.argv.includes('detectProxies')) {
-    try {
-      const results = await detectProxies();
-      console.log('[+] Proxy detection completed.');
-      process.exit(0);
-    } catch (error) {
-      console.error('[-] Critical error in proxy detection process:', error);
-      process.exit(1);
-    }
-  } else if (process.argv.includes('exportAllProxies')) {
-    try {
-      await exportAllProxiesCsv();
-      console.log('[+] Proxy export completed.');
-      process.exit(0);
-    } catch (error) {
-      console.error('[-] Failed to export proxies:', error);
-      process.exit(1);
-    }
   } else if (process.argv.includes('testProxy')) {
     const currentPublicIp = await getCurrentPublicIp();
     if (!isValidIp(currentPublicIp)) {
@@ -703,10 +732,6 @@ async function updateFreeProxyList() {
         console.log(`${test}: ${result.success ? 'SUCCESS' : 'FAILED'} - ${result.success ? result.ip : result.error}`);
       }
     }
-  } else if (process.argv.includes('isValidIp')) {
-    console.log(isValidIp('2a01:4f8:1c1a:b453::1'));
-    const myIp = await getCurrentPublicIp();
-    console.log(isValidIp(myIp), myIp);
   }
 })();
 
