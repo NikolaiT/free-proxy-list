@@ -649,6 +649,7 @@ async function detectProxies() {
 
 function exportRankedProxiesForScrapeApi(results) {
   const SCRAPEAPI_PROXY_FILE = path.join(__dirname, '..', 'scrapeapi.dev', 'ranked_proxies.json');
+  const FREE_PROXY_LIST_FILE = path.join(__dirname, 'ranked_proxies.json');
 
   const ranked = [];
   for (const type of ['http', 'https', 'socks5', 'socks4']) {
@@ -679,7 +680,14 @@ function exportRankedProxiesForScrapeApi(results) {
     fs.writeFileSync(SCRAPEAPI_PROXY_FILE, JSON.stringify(output, null, 2));
     console.log(`[proxy-list] Exported ${ranked.length} ranked proxies to ${SCRAPEAPI_PROXY_FILE}`);
   } catch (err) {
-    console.error(`[proxy-list] Failed to write ranked proxies: ${err.message}`);
+    console.error(`[proxy-list] Failed to write ranked proxies to scrapeapi: ${err.message}`);
+  }
+
+  try {
+    fs.writeFileSync(FREE_PROXY_LIST_FILE, JSON.stringify(output, null, 2));
+    console.log(`[proxy-list] Exported ${ranked.length} ranked proxies to ${FREE_PROXY_LIST_FILE}`);
+  } catch (err) {
+    console.error(`[proxy-list] Failed to write ranked proxies to free-proxy-list: ${err.message}`);
   }
 }
 
