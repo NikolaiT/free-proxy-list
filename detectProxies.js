@@ -647,6 +647,36 @@ async function detectProxies() {
   return results;
 }
 
+// Lazy-loaded mmdb reader for IP-to-country lookups
+let _locationReader = null;
+let _location6Reader = null;
+function getCountryCode(ip) {
+  if (!_locationReader) {
+    try {
+      const mmdb = require('mmdb-lib');
+      const locationPath = path.join(__dirname, '..', 'ip_api_data', 'ipapi_database', 'mmdb', 'location.mmdb');
+      const location6Path = path.join(__dirname, '..', 'ip_api_data', 'ipapi_database', 'mmdb', 'location6.mmdb');
+      if (fs.existsSync(locationPath)) {
+        _locationReader = new mmdb.Reader(fs.readFileSync(locationPath));
+      }
+      if (fs.existsSync(location6Path)) {
+        _location6Reader = new mmdb.Reader(fs.readFileSync(location6Path));
+      }
+    } catch (err) {
+      console.error(`[proxy-list] Failed to load mmdb for country lookup: ${err.message}`);
+      return null;
+    }
+  }
+  try {
+    const reader = ip.includes(':') ? _location6Reader : _locationReader;
+    if (!reader) return null;
+    const result = reader.get(ip);
+    return result?.country_code || null;
+  } catch {
+    return null;
+  }
+}
+
 function exportRankedProxiesForScrapeApi(results) {
   const SCRAPEAPI_PROXY_FILE = path.join(__dirname, '..', 'scrapeapi.dev', 'ranked_proxies.json');
   const FREE_PROXY_LIST_FILE = path.join(__dirname, 'ranked_proxies.json');
@@ -663,6 +693,7 @@ function exportRankedProxiesForScrapeApi(results) {
         host: parts[2],
         port: parseInt(parts[3], 10),
         exitIp: entry.ip,
+        exitCountry: getCountryCode(entry.ip),
         latencyMs: entry.latencyMs,
       });
     }

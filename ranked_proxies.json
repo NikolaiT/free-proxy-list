@@ -1,0 +1,1413 @@
+{
+  "generatedAt": "2026-03-30T14:56:01.363Z",
+  "count": 201,
+  "proxies": [
+    {
+      "scheme": "socks5",
+      "host": "161.35.70.249",
+      "port": 1080,
+      "exitIp": "2a03:b0c0:3:f0::94:1000",
+      "latencyMs": 159
+    },
+    {
+      "scheme": "socks5",
+      "host": "5.75.202.83",
+      "port": 10000,
+      "exitIp": "5.75.202.83",
+      "latencyMs": 187
+    },
+    {
+      "scheme": "socks5",
+      "host": "173.249.5.133",
+      "port": 1080,
+      "exitIp": "173.249.5.133",
+      "latencyMs": 282
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.220",
+      "port": 6331,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 326
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.222",
+      "port": 9828,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 328
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.217",
+      "port": 8800,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 343
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.200",
+      "port": 10992,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 348
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.213",
+      "port": 5293,
+      "exitIp": "85.202.160.80",
+      "latencyMs": 365
+    },
+    {
+      "scheme": "socks5",
+      "host": "31.211.142.115",
+      "port": 8192,
+      "exitIp": "31.211.142.115",
+      "latencyMs": 372
+    },
+    {
+      "scheme": "socks5",
+      "host": "194.163.167.32",
+      "port": 1080,
+      "exitIp": "194.163.167.32",
+      "latencyMs": 377
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.185",
+      "port": 10000,
+      "exitIp": "81.29.32.213",
+      "latencyMs": 393
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.204",
+      "port": 8423,
+      "exitIp": "213.145.94.101",
+      "latencyMs": 408
+    },
+    {
+      "scheme": "socks5",
+      "host": "89.208.87.253",
+      "port": 1080,
+      "exitIp": "89.208.87.253",
+      "latencyMs": 441
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.217",
+      "port": 9000,
+      "exitIp": "135.236.141.8",
+      "latencyMs": 446
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.227",
+      "port": 9621,
+      "exitIp": "82.165.14.138",
+      "latencyMs": 446
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.212",
+      "port": 8909,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 459
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.178",
+      "port": 5603,
+      "exitIp": "213.145.94.101",
+      "latencyMs": 460
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.190",
+      "port": 8989,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 568
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.181",
+      "port": 5270,
+      "exitIp": "213.32.22.52",
+      "latencyMs": 573
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.210",
+      "port": 4308,
+      "exitIp": "37.187.29.212",
+      "latencyMs": 636
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.234",
+      "port": 30050,
+      "exitIp": "209.38.204.226",
+      "latencyMs": 669
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.188",
+      "port": 7447,
+      "exitIp": "135.236.141.8",
+      "latencyMs": 676
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.207",
+      "port": 10000,
+      "exitIp": "92.53.96.141",
+      "latencyMs": 698
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.178",
+      "port": 5943,
+      "exitIp": "165.245.182.84",
+      "latencyMs": 732
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.222",
+      "port": 4843,
+      "exitIp": "152.42.232.149",
+      "latencyMs": 751
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.209",
+      "port": 8232,
+      "exitIp": "84.247.146.193",
+      "latencyMs": 760
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.215",
+      "port": 5046,
+      "exitIp": "138.68.183.21",
+      "latencyMs": 762
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.230",
+      "port": 9107,
+      "exitIp": "152.42.232.149",
+      "latencyMs": 790
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.178",
+      "port": 5027,
+      "exitIp": "54.39.17.116",
+      "latencyMs": 800
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.178",
+      "port": 6593,
+      "exitIp": "167.172.79.172",
+      "latencyMs": 826
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.231",
+      "port": 8957,
+      "exitIp": "147.93.1.215",
+      "latencyMs": 840
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.214",
+      "port": 15749,
+      "exitIp": "72.167.150.128",
+      "latencyMs": 850
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.202",
+      "port": 8831,
+      "exitIp": "74.208.85.37",
+      "latencyMs": 876
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.229",
+      "port": 9127,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 887
+    },
+    {
+      "scheme": "socks5",
+      "host": "172.86.126.35",
+      "port": 443,
+      "exitIp": "172.86.126.35",
+      "latencyMs": 889
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.206",
+      "port": 8009,
+      "exitIp": "135.236.141.8",
+      "latencyMs": 903
+    },
+    {
+      "scheme": "socks5",
+      "host": "154.64.235.206",
+      "port": 58367,
+      "exitIp": "154.64.235.206",
+      "latencyMs": 917
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.210",
+      "port": 8186,
+      "exitIp": "123.30.109.8",
+      "latencyMs": 939
+    },
+    {
+      "scheme": "socks5",
+      "host": "159.223.53.194",
+      "port": 1080,
+      "exitIp": "159.223.53.194",
+      "latencyMs": 945
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.219",
+      "port": 14213,
+      "exitIp": "162.241.226.175",
+      "latencyMs": 955
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.206",
+      "port": 10057,
+      "exitIp": "198.57.247.228",
+      "latencyMs": 963
+    },
+    {
+      "scheme": "socks5",
+      "host": "129.150.55.165",
+      "port": 1080,
+      "exitIp": "129.150.55.165",
+      "latencyMs": 972
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.178",
+      "port": 12585,
+      "exitIp": "82.196.25.136",
+      "latencyMs": 980
+    },
+    {
+      "scheme": "socks5",
+      "host": "128.199.202.122",
+      "port": 1080,
+      "exitIp": "2400:6180:0:d0::e5:1",
+      "latencyMs": 983
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.229",
+      "port": 9118,
+      "exitIp": "116.118.2.113",
+      "latencyMs": 1010
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.210",
+      "port": 44435,
+      "exitIp": "152.42.232.149",
+      "latencyMs": 1024
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.232",
+      "port": 8165,
+      "exitIp": "69.163.186.214",
+      "latencyMs": 1035
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.236",
+      "port": 9327,
+      "exitIp": "103.82.21.169",
+      "latencyMs": 1037
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.189",
+      "port": 9089,
+      "exitIp": "103.216.117.42",
+      "latencyMs": 1042
+    },
+    {
+      "scheme": "socks5",
+      "host": "66.42.59.155",
+      "port": 443,
+      "exitIp": "66.42.59.155",
+      "latencyMs": 1047
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.190",
+      "port": 8788,
+      "exitIp": "97.74.93.106",
+      "latencyMs": 1056
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.199",
+      "port": 9422,
+      "exitIp": "135.236.141.8",
+      "latencyMs": 1069
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.227",
+      "port": 13866,
+      "exitIp": "103.74.123.125",
+      "latencyMs": 1076
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.180",
+      "port": 30042,
+      "exitIp": "103.216.119.20",
+      "latencyMs": 1083
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.199",
+      "port": 9889,
+      "exitIp": "18.205.231.47",
+      "latencyMs": 1085
+    },
+    {
+      "scheme": "socks5",
+      "host": "195.19.48.251",
+      "port": 1080,
+      "exitIp": "195.19.48.251",
+      "latencyMs": 1090
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.178",
+      "port": 4963,
+      "exitIp": "103.241.128.176",
+      "latencyMs": 1095
+    },
+    {
+      "scheme": "socks5",
+      "host": "212.58.132.5",
+      "port": 1080,
+      "exitIp": "212.58.132.5",
+      "latencyMs": 1108
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.191",
+      "port": 38466,
+      "exitIp": "103.82.21.169",
+      "latencyMs": 1115
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.176",
+      "port": 4861,
+      "exitIp": "103.241.128.176",
+      "latencyMs": 1132
+    },
+    {
+      "scheme": "socks5",
+      "host": "18.230.5.214",
+      "port": 1080,
+      "exitIp": "18.230.5.214",
+      "latencyMs": 1159
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.187",
+      "port": 6888,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 1172
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.230",
+      "port": 9083,
+      "exitIp": "103.82.21.169",
+      "latencyMs": 1193
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.208",
+      "port": 6966,
+      "exitIp": "208.109.188.137",
+      "latencyMs": 1223
+    },
+    {
+      "scheme": "socks5",
+      "host": "31.130.131.142",
+      "port": 1080,
+      "exitIp": "31.130.131.142",
+      "latencyMs": 1231
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.233",
+      "port": 14560,
+      "exitIp": "116.118.2.113",
+      "latencyMs": 1237
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.205",
+      "port": 8081,
+      "exitIp": "103.28.36.198",
+      "latencyMs": 1254
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.216",
+      "port": 8307,
+      "exitIp": "103.216.118.192",
+      "latencyMs": 1277
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.188",
+      "port": 8079,
+      "exitIp": "123.30.109.8",
+      "latencyMs": 1284
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.224",
+      "port": 9460,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 1292
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.204",
+      "port": 5001,
+      "exitIp": "163.44.192.46",
+      "latencyMs": 1297
+    },
+    {
+      "scheme": "socks5",
+      "host": "139.59.1.14",
+      "port": 1080,
+      "exitIp": "2400:6180:100:d0::40c:2001",
+      "latencyMs": 1299
+    },
+    {
+      "scheme": "socks5",
+      "host": "138.2.47.198",
+      "port": 1080,
+      "exitIp": "138.2.47.198",
+      "latencyMs": 1302
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.187",
+      "port": 25607,
+      "exitIp": "72.167.150.128",
+      "latencyMs": 1309
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.185",
+      "port": 8027,
+      "exitIp": "116.118.2.113",
+      "latencyMs": 1311
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.215",
+      "port": 4969,
+      "exitIp": "34.75.167.170",
+      "latencyMs": 1319
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.228",
+      "port": 9080,
+      "exitIp": "165.245.182.84",
+      "latencyMs": 1333
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.232",
+      "port": 8344,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 1339
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.183",
+      "port": 7029,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 1352
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.178",
+      "port": 7273,
+      "exitIp": "103.82.21.169",
+      "latencyMs": 1362
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.222",
+      "port": 8383,
+      "exitIp": "5.196.62.228",
+      "latencyMs": 1419
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.187",
+      "port": 4135,
+      "exitIp": "185.180.183.11",
+      "latencyMs": 1452
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.184",
+      "port": 8960,
+      "exitIp": "103.154.63.3",
+      "latencyMs": 1491
+    },
+    {
+      "scheme": "socks5",
+      "host": "121.169.46.116",
+      "port": 1090,
+      "exitIp": "121.169.46.116",
+      "latencyMs": 1555
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.228",
+      "port": 10382,
+      "exitIp": "103.154.63.3",
+      "latencyMs": 1572
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.211",
+      "port": 14974,
+      "exitIp": "160.16.114.120",
+      "latencyMs": 1575
+    },
+    {
+      "scheme": "socks5",
+      "host": "5.42.103.183",
+      "port": 1080,
+      "exitIp": "5.42.103.183",
+      "latencyMs": 1611
+    },
+    {
+      "scheme": "socks5",
+      "host": "45.144.28.81",
+      "port": 10808,
+      "exitIp": "45.144.28.81",
+      "latencyMs": 1623
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.205",
+      "port": 35745,
+      "exitIp": "208.109.188.137",
+      "latencyMs": 1656
+    },
+    {
+      "scheme": "socks5",
+      "host": "192.210.140.36",
+      "port": 1080,
+      "exitIp": "172.86.126.35",
+      "latencyMs": 1656
+    },
+    {
+      "scheme": "socks5",
+      "host": "170.64.170.204",
+      "port": 1080,
+      "exitIp": "170.64.170.204",
+      "latencyMs": 1682
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.217",
+      "port": 37984,
+      "exitIp": "209.38.204.226",
+      "latencyMs": 1731
+    },
+    {
+      "scheme": "socks5",
+      "host": "119.119.87.71",
+      "port": 1080,
+      "exitIp": "8.221.172.1",
+      "latencyMs": 1738
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.184",
+      "port": 30619,
+      "exitIp": "209.38.204.226",
+      "latencyMs": 1742
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.199",
+      "port": 4240,
+      "exitIp": "34.75.167.170",
+      "latencyMs": 1764
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.184",
+      "port": 7631,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 1828
+    },
+    {
+      "scheme": "socks5",
+      "host": "147.45.240.36",
+      "port": 1080,
+      "exitIp": "147.45.240.36",
+      "latencyMs": 1850
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.177",
+      "port": 5919,
+      "exitIp": "103.255.134.61",
+      "latencyMs": 1857
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.187",
+      "port": 8339,
+      "exitIp": "68.178.230.71",
+      "latencyMs": 1883
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.234",
+      "port": 9344,
+      "exitIp": "162.241.2.36",
+      "latencyMs": 1916
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.196",
+      "port": 5695,
+      "exitIp": "162.241.232.71",
+      "latencyMs": 1924
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.188",
+      "port": 8875,
+      "exitIp": "209.74.65.46",
+      "latencyMs": 1934
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.191",
+      "port": 7113,
+      "exitIp": "97.74.92.211",
+      "latencyMs": 1939
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.194",
+      "port": 9505,
+      "exitIp": "147.93.1.215",
+      "latencyMs": 1946
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.219",
+      "port": 10748,
+      "exitIp": "167.172.79.172",
+      "latencyMs": 1988
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.186",
+      "port": 8450,
+      "exitIp": "1.52.120.65",
+      "latencyMs": 2041
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.201",
+      "port": 9426,
+      "exitIp": "133.167.72.231",
+      "latencyMs": 2056
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.179",
+      "port": 4236,
+      "exitIp": "58.65.164.43",
+      "latencyMs": 2063
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.232",
+      "port": 8517,
+      "exitIp": "103.154.63.3",
+      "latencyMs": 2106
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.202",
+      "port": 8775,
+      "exitIp": "66.116.226.103",
+      "latencyMs": 2166
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.200",
+      "port": 11697,
+      "exitIp": "103.82.22.214",
+      "latencyMs": 2255
+    },
+    {
+      "scheme": "socks5",
+      "host": "47.243.75.202",
+      "port": 58854,
+      "exitIp": "47.243.75.202",
+      "latencyMs": 2423
+    },
+    {
+      "scheme": "socks5",
+      "host": "217.173.31.28",
+      "port": 1080,
+      "exitIp": "217.173.31.28",
+      "latencyMs": 2514
+    },
+    {
+      "scheme": "socks5",
+      "host": "203.189.135.105",
+      "port": 1080,
+      "exitIp": "203.189.135.105",
+      "latencyMs": 2520
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.224",
+      "port": 6313,
+      "exitIp": "68.178.230.71",
+      "latencyMs": 2537
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.200",
+      "port": 5473,
+      "exitIp": "122.129.218.5",
+      "latencyMs": 2587
+    },
+    {
+      "scheme": "socks5",
+      "host": "103.75.118.84",
+      "port": 1080,
+      "exitIp": "103.75.118.84",
+      "latencyMs": 2635
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.176",
+      "port": 5417,
+      "exitIp": "160.153.183.144",
+      "latencyMs": 2643
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.181",
+      "port": 6885,
+      "exitIp": "167.172.79.172",
+      "latencyMs": 2645
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.180",
+      "port": 4547,
+      "exitIp": "34.75.167.170",
+      "latencyMs": 2655
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.219",
+      "port": 8625,
+      "exitIp": "37.187.29.212",
+      "latencyMs": 2660
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.204",
+      "port": 9607,
+      "exitIp": "103.82.21.169",
+      "latencyMs": 2674
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.224",
+      "port": 9921,
+      "exitIp": "60.199.230.59",
+      "latencyMs": 2710
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.223",
+      "port": 30198,
+      "exitIp": "141.98.11.117",
+      "latencyMs": 2717
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.228",
+      "port": 8938,
+      "exitIp": "68.178.230.71",
+      "latencyMs": 2721
+    },
+    {
+      "scheme": "socks5",
+      "host": "94.130.16.48",
+      "port": 30115,
+      "exitIp": "91.90.120.161",
+      "latencyMs": 2742
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.222",
+      "port": 8888,
+      "exitIp": "1.52.120.65",
+      "latencyMs": 2755
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.230",
+      "port": 8103,
+      "exitIp": "67.207.86.6",
+      "latencyMs": 2763
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.196",
+      "port": 8447,
+      "exitIp": "167.172.79.172",
+      "latencyMs": 2763
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.180",
+      "port": 5748,
+      "exitIp": "160.153.183.144",
+      "latencyMs": 2767
+    },
+    {
+      "scheme": "socks5",
+      "host": "193.221.203.192",
+      "port": 1080,
+      "exitIp": "193.221.203.192",
+      "latencyMs": 2845
+    },
+    {
+      "scheme": "socks5",
+      "host": "195.19.50.114",
+      "port": 1080,
+      "exitIp": "195.19.50.114",
+      "latencyMs": 2880
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.176",
+      "port": 4792,
+      "exitIp": "177.91.172.6",
+      "latencyMs": 2881
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.216",
+      "port": 4100,
+      "exitIp": "116.118.2.113",
+      "latencyMs": 2949
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.190",
+      "port": 5937,
+      "exitIp": "116.118.2.113",
+      "latencyMs": 3036
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.200",
+      "port": 11579,
+      "exitIp": "103.82.21.169",
+      "latencyMs": 3079
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.208",
+      "port": 4208,
+      "exitIp": "160.153.183.144",
+      "latencyMs": 3138
+    },
+    {
+      "scheme": "socks5",
+      "host": "94.130.16.48",
+      "port": 30007,
+      "exitIp": "45.130.202.24",
+      "latencyMs": 3145
+    },
+    {
+      "scheme": "socks5",
+      "host": "137.175.64.51",
+      "port": 1080,
+      "exitIp": "137.175.64.51",
+      "latencyMs": 3155
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.187",
+      "port": 8566,
+      "exitIp": "51.103.25.59",
+      "latencyMs": 3179
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.178",
+      "port": 5065,
+      "exitIp": "122.129.218.5",
+      "latencyMs": 3225
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.228",
+      "port": 34634,
+      "exitIp": "208.109.188.137",
+      "latencyMs": 3226
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.234",
+      "port": 6196,
+      "exitIp": "82.165.14.138",
+      "latencyMs": 3227
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.215",
+      "port": 6410,
+      "exitIp": "103.216.119.20",
+      "latencyMs": 3285
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.185",
+      "port": 10810,
+      "exitIp": "123.30.109.8",
+      "latencyMs": 3318
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.180",
+      "port": 9082,
+      "exitIp": "103.255.134.61",
+      "latencyMs": 3386
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.183",
+      "port": 7140,
+      "exitIp": "5.196.62.228",
+      "latencyMs": 3425
+    },
+    {
+      "scheme": "socks5",
+      "host": "103.189.63.149",
+      "port": 53053,
+      "exitIp": "103.189.63.149",
+      "latencyMs": 3463
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.184",
+      "port": 6288,
+      "exitIp": "161.97.77.0",
+      "latencyMs": 3468
+    },
+    {
+      "scheme": "socks5",
+      "host": "18.166.234.191",
+      "port": 5050,
+      "exitIp": "18.166.234.191",
+      "latencyMs": 3521
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.182",
+      "port": 8907,
+      "exitIp": "103.216.117.42",
+      "latencyMs": 3548
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.202",
+      "port": 8629,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 3553
+    },
+    {
+      "scheme": "socks5",
+      "host": "87.117.11.57",
+      "port": 1080,
+      "exitIp": "87.117.11.57",
+      "latencyMs": 3643
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.210",
+      "port": 6096,
+      "exitIp": "103.90.232.170",
+      "latencyMs": 3676
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.185",
+      "port": 10792,
+      "exitIp": "103.216.119.20",
+      "latencyMs": 3678
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.204",
+      "port": 32296,
+      "exitIp": "179.108.84.136",
+      "latencyMs": 3689
+    },
+    {
+      "scheme": "socks5",
+      "host": "45.119.97.69",
+      "port": 443,
+      "exitIp": "45.119.97.69",
+      "latencyMs": 3709
+    },
+    {
+      "scheme": "socks5",
+      "host": "184.95.235.194",
+      "port": 1080,
+      "exitIp": "184.95.235.194",
+      "latencyMs": 3765
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.213",
+      "port": 5863,
+      "exitIp": "179.108.84.136",
+      "latencyMs": 3790
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.181",
+      "port": 5886,
+      "exitIp": "133.167.72.231",
+      "latencyMs": 3791
+    },
+    {
+      "scheme": "socks5",
+      "host": "38.76.200.182",
+      "port": 58367,
+      "exitIp": "38.76.200.182",
+      "latencyMs": 3812
+    },
+    {
+      "scheme": "socks5",
+      "host": "94.233.120.194",
+      "port": 1080,
+      "exitIp": "94.233.120.194",
+      "latencyMs": 3839
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.215",
+      "port": 4459,
+      "exitIp": "179.108.84.136",
+      "latencyMs": 3862
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.202",
+      "port": 9304,
+      "exitIp": "123.30.109.8",
+      "latencyMs": 3871
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.181",
+      "port": 8856,
+      "exitIp": "103.154.63.3",
+      "latencyMs": 3927
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.198",
+      "port": 4574,
+      "exitIp": "84.247.146.193",
+      "latencyMs": 3959
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.205",
+      "port": 8080,
+      "exitIp": "67.207.86.6",
+      "latencyMs": 3987
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.177",
+      "port": 4340,
+      "exitIp": "54.39.17.116",
+      "latencyMs": 3988
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.218",
+      "port": 6014,
+      "exitIp": "135.236.141.8",
+      "latencyMs": 4026
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.238",
+      "port": 8843,
+      "exitIp": "60.199.230.59",
+      "latencyMs": 4157
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.236",
+      "port": 8289,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 4173
+    },
+    {
+      "scheme": "socks5",
+      "host": "59.46.216.131",
+      "port": 30001,
+      "exitIp": "59.46.216.137",
+      "latencyMs": 4229
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.192",
+      "port": 6960,
+      "exitIp": "103.216.119.20",
+      "latencyMs": 4281
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.187",
+      "port": 7055,
+      "exitIp": "213.145.94.101",
+      "latencyMs": 4284
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.178",
+      "port": 34672,
+      "exitIp": "213.32.30.70",
+      "latencyMs": 4304
+    },
+    {
+      "scheme": "socks5",
+      "host": "103.150.206.77",
+      "port": 1080,
+      "exitIp": "103.150.206.77",
+      "latencyMs": 4375
+    },
+    {
+      "scheme": "socks5",
+      "host": "144.124.227.90",
+      "port": 21074,
+      "exitIp": "144.124.227.90",
+      "latencyMs": 4424
+    },
+    {
+      "scheme": "socks5",
+      "host": "123.54.197.51",
+      "port": 21786,
+      "exitIp": "1.194.11.249",
+      "latencyMs": 4434
+    },
+    {
+      "scheme": "socks5",
+      "host": "94.159.106.252",
+      "port": 1080,
+      "exitIp": "94.159.106.252",
+      "latencyMs": 4459
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.203",
+      "port": 8740,
+      "exitIp": "1.52.120.65",
+      "latencyMs": 4500
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.187",
+      "port": 6704,
+      "exitIp": "37.187.29.212",
+      "latencyMs": 4529
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.233",
+      "port": 24671,
+      "exitIp": "72.167.150.128",
+      "latencyMs": 4576
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.176",
+      "port": 4152,
+      "exitIp": "89.188.72.141",
+      "latencyMs": 4584
+    },
+    {
+      "scheme": "socks5",
+      "host": "185.114.73.2",
+      "port": 1080,
+      "exitIp": "185.114.73.2",
+      "latencyMs": 4604
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.190",
+      "port": 14365,
+      "exitIp": "162.241.61.230",
+      "latencyMs": 4648
+    },
+    {
+      "scheme": "socks5",
+      "host": "134.199.159.23",
+      "port": 1080,
+      "exitIp": "134.199.159.23",
+      "latencyMs": 4704
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.211",
+      "port": 7707,
+      "exitIp": "152.42.232.149",
+      "latencyMs": 4727
+    },
+    {
+      "scheme": "socks5",
+      "host": "101.43.127.100",
+      "port": 8877,
+      "exitIp": "101.43.127.100",
+      "latencyMs": 4908
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.200",
+      "port": 28505,
+      "exitIp": "103.255.134.61",
+      "latencyMs": 4912
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.191",
+      "port": 44382,
+      "exitIp": "82.196.25.136",
+      "latencyMs": 4956
+    },
+    {
+      "scheme": "socks5",
+      "host": "167.71.226.135",
+      "port": 1080,
+      "exitIp": "167.71.226.135",
+      "latencyMs": 5044
+    },
+    {
+      "scheme": "socks5",
+      "host": "5.255.99.75",
+      "port": 1080,
+      "exitIp": "5.255.99.75",
+      "latencyMs": 5075
+    },
+    {
+      "scheme": "socks5",
+      "host": "93.177.116.84",
+      "port": 1080,
+      "exitIp": "93.177.116.84",
+      "latencyMs": 5133
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.196",
+      "port": 4035,
+      "exitIp": "160.153.183.144",
+      "latencyMs": 5166
+    },
+    {
+      "scheme": "socks5",
+      "host": "31.43.194.184",
+      "port": 1080,
+      "exitIp": "31.43.194.184",
+      "latencyMs": 5239
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.178",
+      "port": 5838,
+      "exitIp": "103.255.134.61",
+      "latencyMs": 5264
+    },
+    {
+      "scheme": "socks5",
+      "host": "149.28.11.32",
+      "port": 1080,
+      "exitIp": "50.67.98.203",
+      "latencyMs": 5290
+    },
+    {
+      "scheme": "socks5",
+      "host": "103.197.241.209",
+      "port": 1080,
+      "exitIp": "103.197.241.209",
+      "latencyMs": 5327
+    },
+    {
+      "scheme": "socks5",
+      "host": "206.123.156.223",
+      "port": 20809,
+      "exitIp": "51.103.25.59",
+      "latencyMs": 5573
+    },
+    {
+      "scheme": "socks5",
+      "host": "8.219.178.24",
+      "port": 1011,
+      "exitIp": "119.178.86.84",
+      "latencyMs": 5812
+    },
+    {
+      "scheme": "socks5",
+      "host": "104.219.236.127",
+      "port": 1080,
+      "exitIp": "104.219.236.127",
+      "latencyMs": 7734
+    }
+  ]
+}
