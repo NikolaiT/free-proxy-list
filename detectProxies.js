@@ -671,7 +671,7 @@ function getCountryCode(ip) {
     const reader = ip.includes(':') ? _location6Reader : _locationReader;
     if (!reader) return null;
     const result = reader.get(ip);
-    return result?.country_code || null;
+    return result?.countryCode || null;
   } catch {
     return null;
   }
