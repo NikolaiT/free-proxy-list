@@ -10,7 +10,6 @@ const {
   TEST_URL,
   CONCURRENCY,
   SAVE_INTERVAL,
-  RESULTS_CACHE_DIR,
   saveResults,
   saveUniqueIpResults,
   writeWorkingProxiesToFiles,
@@ -18,7 +17,7 @@ const {
   convertSourceLine
 } = require('./helpers.js');
 
-const { readFile, writeFile, stat } = fs.promises;
+const { readFile } = fs.promises;
 
 const CURL_ERROR_DESCRIPTIONS = {
   7: 'Failed to connect to proxy host',
@@ -95,53 +94,18 @@ function runCurl(cmdArgs, timeoutMs) {
 
 /**
  * Test a single proxy for functionality and anonymity.
+ *
+ * NOTE: this used to maintain a per-proxy JSON file cache in results_cache/,
+ * but every caller passed useCache=false, so the cache was write-only: it had
+ * grown to 2.2GB / 565k files and added a file write to every single test.
+ * The cache has been removed.
+ *
  * @param {Object} proxyObj - Proxy object with type, host, port, normalized.
  * @param {string} currentPublicIp - The current public IP of the client.
- * @param {boolean} useCache - Whether to use cached results if available.
  * @returns {Promise<Object>} - Result object with success, proxy, ip/error.
  */
-async function testProxy(proxyObj, currentPublicIp, useCache = true) {
+async function testProxy(proxyObj, currentPublicIp) {
   const { type, host, port, normalized } = proxyObj;
-  const cacheKey = `${type}_${host}_${port}`.replace(/[^a-zA-Z0-9]/g, '_');
-  const cachePath = path.join(RESULTS_CACHE_DIR, `${cacheKey}.json`);
-  const CACHE_VALIDITY_MS = 18 * 60 * 60 * 1000; // 18 hours
-
-  // Check cache first, but only if useCache is true and cache is fresh (less than 6 hours old)
-  let cacheIsFresh = false;
-  if (useCache) {
-    try {
-      const cacheStat = await stat(cachePath);
-      if (Date.now() - cacheStat.mtimeMs < CACHE_VALIDITY_MS) {
-        cacheIsFresh = true;
-      }
-    } catch (e) {
-      cacheIsFresh = false;
-    }
-  }
-
-  if (useCache && cacheIsFresh) {
-    try {
-      const cachedRaw = await readFile(cachePath, 'utf8');
-      const cachedResult = JSON.parse(cachedRaw);
-      // If cached result is a false positive (proxy resolves to our own IP), mark as failed
-      if (cachedResult.success && cachedResult.ip === currentPublicIp) {
-        const failResult = {
-          success: false,
-          proxy: normalized,
-          error: "Proxy resolves to client IP, not a working proxy"
-        };
-        try {
-          await writeFile(cachePath, JSON.stringify(failResult, null, 2));
-        } catch (writeError) {
-          // Ignore cache write errors
-        }
-        return failResult;
-      }
-      return cachedResult;
-    } catch (error) {
-      // Cache read error, continue with fresh test
-    }
-  }
 
   try {
     // Prepare curl command arguments based on proxy type
@@ -166,31 +130,23 @@ async function testProxy(proxyObj, currentPublicIp, useCache = true) {
     if (response) {
       const ip = response.trim();
       if (ip === currentPublicIp) {
-        const failResult = {
+        return {
           success: false,
           proxy: normalized,
           error: "Proxy resolves to client IP, not a working proxy",
           stderr: stderr ? stderr.substring(0, 200) : undefined
         };
-        try {
-          await writeFile(cachePath, JSON.stringify(failResult, null, 2));
-        } catch (writeError) { }
-        return failResult;
       }
       if (!isValidIp(ip)) {
         throw { error: new Error(`Invalid IP format received: ${ip}`), stdout: response, stderr };
       }
-      const result = {
+      return {
         success: true,
         ip,
         proxy: normalized,
         latencyMs,
         stderr: stderr ? stderr.substring(0, 200) : undefined
       };
-      try {
-        await writeFile(cachePath, JSON.stringify(result, null, 2));
-      } catch (writeError) { }
-      return result;
     } else {
       throw { error: new Error(`Request failed or returned invalid data. Response: ${response}`), stdout: response, stderr };
     }
@@ -219,19 +175,12 @@ async function testProxy(proxyObj, currentPublicIp, useCache = true) {
       errorMessage = 'Process timed out';
     }
 
-    const result = {
+    return {
       success: false,
       proxy: normalized,
       error: errorMessage ? errorMessage.substring(0, 200) : 'Unknown error',
       stderr: stderr ? stderr.substring(0, 200) : undefined
     };
-
-    try {
-      await writeFile(cachePath, JSON.stringify(result, null, 2));
-    } catch (writeError) {
-      // Ignore cache write errors
-    }
-    return result;
   }
 }
 
@@ -516,7 +465,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
     try {
       saveResults(results, outputPath);
       saveUniqueIpResults(results, outputDir);
-      exportRankedProxiesForScrapeApi(results);
+      exportRankedProxiesForScrapeApi(results, false);
     } catch (saveError) {
       // ignore persistence errors
     }
@@ -525,13 +474,26 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
 
   const latencies = [];
 
+  const workerCount = Math.min(CONCURRENCY, total);
+
+  // Carriage-return progress is only useful on an interactive terminal; when
+  // stdout is redirected to a log file it produces huge unreadable blobs, so
+  // fall back to a plain progress line once a minute.
+  const isTTY = process.stdout.isTTY;
+  if (!isTTY) {
+    console.log(`[${type}] Testing ${total} proxies with ${workerCount} workers...`);
+  }
+  let lastPlainLog = Date.now();
   const progressInterval = setInterval(() => {
     const elapsed = ((Date.now() - stats.startTime) / 1000).toFixed(0);
     const rate = (finished / Math.max(elapsed, 1)).toFixed(1);
-    process.stdout.write(`\r[${type}] ${finished}/${total} tested | ${totalWorkingCount} working | ${totalFailedCount} failed | ${rate}/s | ${elapsed}s`);
+    if (isTTY) {
+      process.stdout.write(`\r[${type}] ${finished}/${total} tested | ${totalWorkingCount} working | ${totalFailedCount} failed | ${rate}/s | ${elapsed}s`);
+    } else if (Date.now() - lastPlainLog >= 60000) {
+      lastPlainLog = Date.now();
+      console.log(`[${type}] ${finished}/${total} tested | ${totalWorkingCount} working | ${totalFailedCount} failed | ${rate}/s | ${elapsed}s`);
+    }
   }, 2000);
-
-  const workerCount = Math.min(CONCURRENCY, total);
   const workers = Array.from({ length: workerCount }, async () => {
     while (true) {
       const currentIndex = index++;
@@ -542,7 +504,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
       const proxyObj = proxiesToTest[currentIndex];
       active++;
       try {
-        const result = await testProxy(proxyObj, currentPublicIp, false);
+        const result = await testProxy(proxyObj, currentPublicIp);
         recordResult(result);
         if (result.success && result.latencyMs) {
           latencies.push(result.latencyMs);
@@ -569,7 +531,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
   const maxLatency = sorted.length > 0 ? sorted[sorted.length - 1] : '-';
   const elapsed = ((Date.now() - stats.startTime) / 1000).toFixed(1);
 
-  process.stdout.write(`\r[${type}] ${finished}/${total} tested | ${totalWorkingCount} working | ${totalFailedCount} failed | ${elapsed}s | avg ${avgLatency}ms med ${medianLatency}ms min ${minLatency}ms max ${maxLatency}ms\n`);
+  process.stdout.write(`${isTTY ? '\r' : ''}[${type}] ${finished}/${total} tested | ${totalWorkingCount} working | ${totalFailedCount} failed | ${elapsed}s | avg ${avgLatency}ms med ${medianLatency}ms min ${minLatency}ms max ${maxLatency}ms\n`);
 }
 
 
@@ -677,7 +639,7 @@ function getCountryCode(ip) {
   }
 }
 
-function exportRankedProxiesForScrapeApi(results) {
+function exportRankedProxiesForScrapeApi(results, verbose = true) {
   const SCRAPEAPI_PROXY_FILE = path.join(__dirname, '..', 'scrapeapi.dev', 'ranked_proxies.json');
   const FREE_PROXY_LIST_FILE = path.join(__dirname, 'ranked_proxies.json');
 
@@ -709,14 +671,14 @@ function exportRankedProxiesForScrapeApi(results) {
 
   try {
     fs.writeFileSync(SCRAPEAPI_PROXY_FILE, JSON.stringify(output, null, 2));
-    console.log(`[proxy-list] Exported ${ranked.length} ranked proxies to ${SCRAPEAPI_PROXY_FILE}`);
+    if (verbose) console.log(`[proxy-list] Exported ${ranked.length} ranked proxies to ${SCRAPEAPI_PROXY_FILE}`);
   } catch (err) {
     console.error(`[proxy-list] Failed to write ranked proxies to scrapeapi: ${err.message}`);
   }
 
   try {
     fs.writeFileSync(FREE_PROXY_LIST_FILE, JSON.stringify(output, null, 2));
-    console.log(`[proxy-list] Exported ${ranked.length} ranked proxies to ${FREE_PROXY_LIST_FILE}`);
+    if (verbose) console.log(`[proxy-list] Exported ${ranked.length} ranked proxies to ${FREE_PROXY_LIST_FILE}`);
   } catch (err) {
     console.error(`[proxy-list] Failed to write ranked proxies to free-proxy-list: ${err.message}`);
   }
@@ -724,24 +686,41 @@ function exportRankedProxiesForScrapeApi(results) {
 
 async function updateFreeProxyList() {
   const results = await detectProxies();
+
+  // detectProxies() returns undefined when it aborts (e.g. the public IP could
+  // not be determined). Previously this still exported files and reported
+  // success, silently publishing stale/empty proxy lists.
+  if (!results) {
+    return { status: 'UPDATE_WARNING', message: 'Proxy detection aborted (no public IP?) — keeping previous proxy lists', error: null };
+  }
+
   writeWorkingProxiesToFiles();
   await exportAllProxiesCsv();
-  if (results) {
-    exportRankedProxiesForScrapeApi(results);
-  }
+  exportRankedProxiesForScrapeApi(results);
+
+  const totalWorking = ['socks5', 'socks4', 'http', 'https']
+    .reduce((sum, type) => sum + ((results[type] && results[type].working.length) || 0), 0);
 
   try {
-    execSync('git add . && git commit -m "auto commit (I am lazy)" && git push origin main', {
-      cwd: __dirname,
-      stdio: 'inherit',
-      timeout: 30000,
-    });
-    console.log('[proxy-list] Repository pushed successfully');
+    // Only commit when files actually changed; `git commit` exits non-zero on an
+    // empty diff, which previously produced a misleading "Git push failed" error.
+    const hasChanges = execSync('git status --porcelain', { cwd: __dirname, timeout: 15000 }).toString().trim().length > 0;
+    if (hasChanges) {
+      execSync('git add . && git commit -m "auto commit (I am lazy)" && git push origin main', {
+        cwd: __dirname,
+        stdio: 'inherit',
+        timeout: 30000,
+      });
+      console.log('[proxy-list] Repository pushed successfully');
+    } else {
+      console.log('[proxy-list] No changes to commit');
+    }
   } catch (err) {
     console.error('[proxy-list] Git push failed:', err.message);
+    return { status: 'UPDATE_WARNING', message: `Free proxy list updated (${totalWorking} working proxies) but git push failed: ${err.message}`, error: null };
   }
 
-  return { status: 'UPDATE_SUCCESS', message: 'Free proxy list updated successfully', error: null };
+  return { status: 'UPDATE_SUCCESS', message: `Free proxy list updated: ${totalWorking} working proxies`, error: null };
 }
 
 (async () => {
@@ -767,7 +746,7 @@ async function updateFreeProxyList() {
       ];
       for (const test of tests) {
         const norm = normalizeProxyLine(test);
-        const result = await testProxy(norm, currentPublicIp, false);
+        const result = await testProxy(norm, currentPublicIp);
         console.log(result);
       }
     }
@@ -784,7 +763,7 @@ async function updateFreeProxyList() {
     for (const test of httpsProxies) {
       const norm = normalizeProxyLine(test);
       if (norm) {
-        const result = await testProxy(norm, currentPublicIp, false);
+        const result = await testProxy(norm, currentPublicIp);
         console.log(`${test}: ${result.success ? 'SUCCESS' : 'FAILED'} - ${result.success ? result.ip : result.error}`);
       }
     }

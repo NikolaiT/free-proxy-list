@@ -7,11 +7,15 @@ const { socks5sources, socks4sources, httpSources, httpsSources } = require('./p
 
 const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36";
 const CACHE_DIR = path.join(__dirname, 'cache');
-const RESULTS_CACHE_DIR = path.join(__dirname, 'results_cache');
 const TEST_URL = 'https://icanhazip.com/';
 const TIMEOUT = 12000;
-const CONCURRENCY = 50;
-const SAVE_INTERVAL = 200;
+// Each test is a curl subprocess that mostly waits on the network; 50 workers
+// meant ~12 tests/s and ~3h for a full run over ~140k proxies. 300 workers
+// (~1.5GB RSS peak for the curl processes) brings a full run under an hour.
+const CONCURRENCY = 300;
+// Persisting rewrites every output file (results JSON, unique IPs, ranked
+// proxies) — doing that every 200 tests was ~700 full rewrites per run.
+const SAVE_INTERVAL = 5000;
 // Cache validity for proxy source downloads: 6 hours (in ms)
 const PROXY_SOURCE_CACHE_VALIDITY = 6 * 60 * 60 * 1000; // 6 hours
 
@@ -437,9 +441,6 @@ const writeWorkingProxiesToFiles = () => {
 if (!fs.existsSync(CACHE_DIR)) {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
 }
-if (!fs.existsSync(RESULTS_CACHE_DIR)) {
-  fs.mkdirSync(RESULTS_CACHE_DIR, { recursive: true });
-}
 
 // --- GLOBAL TLS/Socket error handler to prevent unhandled 'error' events ---
 process.on('uncaughtException', (err) => {
@@ -476,7 +477,6 @@ module.exports = {
   TIMEOUT,
   CONCURRENCY,
   SAVE_INTERVAL,
-  RESULTS_CACHE_DIR,
   CACHE_DIR,
   TEST_URL,
   executeCommand,
