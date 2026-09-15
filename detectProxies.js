@@ -640,7 +640,9 @@ function getCountryCode(ip) {
 }
 
 function exportRankedProxiesForScrapeApi(results, verbose = true) {
-  const SCRAPEAPI_PROXY_FILE = path.join(__dirname, '..', 'scrapeapi.dev', 'ranked_proxies.json');
+  // scrapeapi.dev reads this as its proxy pool (src/config.js proxyPoolFile).
+  // It lives under data/ there, not at the project root — keep the two in sync.
+  const SCRAPEAPI_PROXY_FILE = path.join(__dirname, '..', 'scrapeapi.dev', 'data', 'ranked_proxies.json');
   const FREE_PROXY_LIST_FILE = path.join(__dirname, 'ranked_proxies.json');
 
   const ranked = [];
@@ -670,6 +672,7 @@ function exportRankedProxiesForScrapeApi(results, verbose = true) {
   };
 
   try {
+    fs.mkdirSync(path.dirname(SCRAPEAPI_PROXY_FILE), { recursive: true });
     fs.writeFileSync(SCRAPEAPI_PROXY_FILE, JSON.stringify(output, null, 2));
     if (verbose) console.log(`[proxy-list] Exported ${ranked.length} ranked proxies to ${SCRAPEAPI_PROXY_FILE}`);
   } catch (err) {
