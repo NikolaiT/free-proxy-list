@@ -9,9 +9,8 @@ const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/5
 const CACHE_DIR = path.join(__dirname, 'cache');
 const TEST_URL = 'https://icanhazip.com/';
 const TIMEOUT = 12000;
-// Each test is a curl subprocess that mostly waits on the network; 50 workers
-// meant ~12 tests/s and ~3h for a full run over ~140k proxies. 300 workers
-// (~1.5GB RSS peak for the curl processes) brings a full run under an hour.
+// Each test mostly waits on the network (a dead proxy takes the full 5s connect
+// timeout); 300 at a time brings a full run of ~200k proxies to about an hour.
 const CONCURRENCY = 300;
 // Persisting rewrites every output file (results JSON, unique IPs, ranked
 // proxies) — doing that every 200 tests was ~700 full rewrites per run.

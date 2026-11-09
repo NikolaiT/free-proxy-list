@@ -1,6 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const { spawn, execSync } = require('child_process');
+const net = require('net');
+const tls = require('tls');
+const dns = require('dns');
+const { once } = require('events');
+const { execSync } = require('child_process');
 const { socks5sources, socks4sources, httpSources, httpsSources } = require('./proxySources.js');
 const {
   downloadSource,
@@ -19,168 +23,118 @@ const {
 
 const { readFile } = fs.promises;
 
-const CURL_ERROR_DESCRIPTIONS = {
-  7: 'Failed to connect to proxy host',
-  28: 'Operation timed out before completion',
-  35: 'TLS handshake failed',
-  60: 'Peer certificate could not be authenticated',
-  97: 'HTTP/2 stream error during transfer'
-};
+// Tests run in-process. Spawning a curl per proxy (300 at a time, ~60 a second)
+// got the whole Terminal session killed by macOS XProtect as malware.
+const TEST_HOST = new URL(TEST_URL).hostname;
+const CONNECT_TIMEOUT = 5000;
+const PORT_443 = Buffer.from([0x01, 0xbb]);
+let testHostIp;
 
-const ERROR_HINTS = {
-  Timeout: 'Proxy did not respond within the configured timeout',
-  'Connection refused': 'Proxy host actively rejected the connection',
-  'Connection reset': 'Remote peer reset the TCP connection',
-  'TLS error': 'TLS negotiation failed with the proxy',
-  'Socket disconnected': 'Underlying socket closed unexpectedly',
-  'DNS lookup failed': 'Unable to resolve proxy hostname',
-  'Proxy resolves to client IP': 'Proxy response returned our own IP address',
-  'Proxy error': 'Proxy reported an error while handling the request',
-  ECONNREFUSED: 'Connection refused by proxy host',
-  'Invalid IP format': 'Proxy returned invalid IP data'
-};
-
-// Helper to run curl and capture both stdout and stderr
-function runCurl(cmdArgs, timeoutMs) {
+// Resolves with what the proxy sent once `complete(bytes)` holds.
+function readReply(socket, complete) {
   return new Promise((resolve, reject) => {
-    const child = spawn('curl', cmdArgs, {});
-
-    let stdout = '';
-    let stderr = '';
-    let finished = false;
-    let timeoutHandle;
-
-    child.stdout.on('data', (data) => {
-      stdout += data.toString();
-    });
-    child.stderr.on('data', (data) => {
-      stderr += data.toString();
-    });
-
-    child.on('error', (err) => {
-      if (!finished) {
-        finished = true;
-        clearTimeout(timeoutHandle);
-        reject({ error: err, stdout, stderr });
-      }
-    });
-
-    child.on('close', (code, signal) => {
-      if (!finished) {
-        finished = true;
-        clearTimeout(timeoutHandle);
-        if (code === 0) {
-          resolve({ stdout: stdout.trim(), stderr: stderr.trim() });
-        } else {
-          reject({ error: new Error(`curl exited with code ${code}${signal ? `, signal ${signal}` : ''}`), stdout: stdout.trim(), stderr: stderr.trim() });
-        }
-      }
-    });
-
-    // Handle timeout manually
-    timeoutHandle = setTimeout(() => {
-      if (!finished) {
-        finished = true;
-        try {
-          child.kill('SIGKILL');
-        } catch (e) {
-          // Ignore kill errors
-        }
-        reject({ error: new Error('Process timed out'), stdout: stdout.trim(), stderr: stderr.trim(), killed: true });
-      }
-    }, timeoutMs + 500);
+    let bytes = Buffer.alloc(0);
+    const onReadable = () => {
+      for (let chunk; (chunk = socket.read()) !== null;) bytes = Buffer.concat([bytes, chunk]);
+      if (complete(bytes)) settle();
+    };
+    const onClose = () => settle(new Error('Proxy closed the connection'));
+    const settle = (err) => {
+      socket.off('readable', onReadable).off('end', onClose).off('close', onClose);
+      if (err) reject(err);
+      else resolve(bytes);
+    };
+    socket.on('readable', onReadable).on('end', onClose).on('close', onClose);
   });
+}
+
+// VER REP RSV ATYP BND.ADDR BND.PORT, where ATYP gives the length of BND.ADDR.
+function socks5ReplyComplete(b) {
+  if (b.length >= 2 && b[1] !== 0) return true;
+  if (b.length < 5) return false;
+  return b.length >= 6 + (b[3] === 1 ? 4 : b[3] === 4 ? 16 : 1 + b[4]);
+}
+
+// As curl did: SOCKS proxies get TEST_HOST resolved locally (--socks5, not
+// --socks5-hostname), HTTP proxies a CONNECT.
+async function openTunnel(socket, type) {
+  if (type === 'http' || type === 'https') {
+    socket.write(`CONNECT ${TEST_HOST}:443 HTTP/1.1\r\nHost: ${TEST_HOST}:443\r\n\r\n`);
+    const reply = await readReply(socket, (b) => b.includes('\r\n\r\n') || b.length > 16384);
+    const status = reply.toString('latin1').split('\r\n', 1)[0];
+    if (!/^HTTP\/1\.[01] 2\d\d/.test(status)) throw new Error(`Proxy CONNECT failed: ${status.substring(0, 80)}`);
+    return;
+  }
+  testHostIp ??= (await dns.promises.lookup(TEST_HOST, { family: 4 })).address;
+  const address = Buffer.from(testHostIp.split('.').map(Number));
+  if (type === 'socks4') {
+    socket.write(Buffer.concat([Buffer.from([4, 1]), PORT_443, address, Buffer.from([0])]));
+    const reply = await readReply(socket, (b) => b.length >= 8);
+    if (reply[1] !== 90) throw new Error(`SOCKS4 connect failed (reply ${reply[1]})`);
+    return;
+  }
+  socket.write(Buffer.from([5, 1, 0]));
+  const [version, method] = await readReply(socket, (b) => b.length >= 2);
+  if (version !== 5 || method !== 0) throw new Error(`SOCKS5 proxy refused unauthenticated access (method ${method})`);
+  socket.write(Buffer.concat([Buffer.from([5, 1, 0, 1]), address, PORT_443]));
+  const reply = await readReply(socket, socks5ReplyComplete);
+  if (reply[1] !== 0) throw new Error(`SOCKS5 connect failed (reply ${reply[1]})`);
+}
+
+// The limits of curl --connect-timeout 5 --max-time 12: tunnel and TLS within
+// CONNECT_TIMEOUT, everything within TIMEOUT. Certificates are checked through
+// SOCKS only; HTTP proxies were always tested with curl -k.
+async function fetchThroughProxy({ type, host, port }) {
+  const socket = net.connect({ host, port: Number(port), family: 4 });
+  let secure;
+  let fail;
+  const failed = new Promise((_, reject) => { fail = reject; });
+  const connectTimer = setTimeout(() => fail(new Error('Connect timeout')), CONNECT_TIMEOUT);
+  const totalTimer = setTimeout(() => fail(new Error('Timeout')), TIMEOUT);
+  socket.on('error', (err) => fail(err));
+  try {
+    return await Promise.race([failed, (async () => {
+      await once(socket, 'connect');
+      await openTunnel(socket, type);
+      secure = tls.connect({ socket, servername: TEST_HOST, rejectUnauthorized: type.startsWith('socks') });
+      secure.on('error', (err) => fail(err));
+      await once(secure, 'secureConnect');
+      clearTimeout(connectTimer);
+      secure.write(`GET / HTTP/1.0\r\nHost: ${TEST_HOST}\r\nAccept: */*\r\nConnection: close\r\n\r\n`);
+      let response = '';
+      for await (const chunk of secure) {
+        response += chunk;
+        if (response.length > 65536) break;
+      }
+      const headerEnd = response.indexOf('\r\n\r\n');
+      if (headerEnd < 0) throw new Error('No HTTP response');
+      return response.slice(headerEnd + 4).trim();
+    })()]);
+  } finally {
+    clearTimeout(connectTimer);
+    clearTimeout(totalTimer);
+    socket.destroy();
+    if (secure) secure.destroy();
+  }
 }
 
 /**
  * Test a single proxy for functionality and anonymity.
- *
- * NOTE: this used to maintain a per-proxy JSON file cache in results_cache/,
- * but every caller passed useCache=false, so the cache was write-only: it had
- * grown to 2.2GB / 565k files and added a file write to every single test.
- * The cache has been removed.
  *
  * @param {Object} proxyObj - Proxy object with type, host, port, normalized.
  * @param {string} currentPublicIp - The current public IP of the client.
  * @returns {Promise<Object>} - Result object with success, proxy, ip/error.
  */
 async function testProxy(proxyObj, currentPublicIp) {
-  const { type, host, port, normalized } = proxyObj;
-
+  const started = Date.now();
+  const failure = (error) => ({ success: false, proxy: proxyObj.normalized, error: error.substring(0, 200) });
   try {
-    // Prepare curl command arguments based on proxy type
-    let curlArgs = [`--max-time`, `${TIMEOUT / 1000}`, '--silent', '-4', '--connect-timeout', '5']; // Prefer IPv4, faster connection timeout
-    if (type === 'socks5') {
-      curlArgs.push('--socks5', `${host}:${port}`);
-    } else if (type === 'socks4') {
-      curlArgs.push('--socks4', `${host}:${port}`);
-    } else if (type === 'http') {
-      curlArgs.push('-x', `http://${host}:${port}`);
-      curlArgs.push('-k');
-    } else if (type === 'https') {
-      curlArgs.push('-x', `http://${host}:${port}`);
-      curlArgs.push('-k');
-    }
-    curlArgs.push(TEST_URL);
-
-    const t0 = Date.now();
-    const { stdout: response, stderr } = await runCurl(curlArgs, TIMEOUT);
-    const latencyMs = Date.now() - t0;
-
-    if (response) {
-      const ip = response.trim();
-      if (ip === currentPublicIp) {
-        return {
-          success: false,
-          proxy: normalized,
-          error: "Proxy resolves to client IP, not a working proxy",
-          stderr: stderr ? stderr.substring(0, 200) : undefined
-        };
-      }
-      if (!isValidIp(ip)) {
-        throw { error: new Error(`Invalid IP format received: ${ip}`), stdout: response, stderr };
-      }
-      return {
-        success: true,
-        ip,
-        proxy: normalized,
-        latencyMs,
-        stderr: stderr ? stderr.substring(0, 200) : undefined
-      };
-    } else {
-      throw { error: new Error(`Request failed or returned invalid data. Response: ${response}`), stdout: response, stderr };
-    }
-
-  } catch (errObj) {
-    let errorMessage = 'Unknown error';
-    let stderr = '';
-    if (errObj && typeof errObj === 'object') {
-      if (errObj.error && errObj.error.message) errorMessage = errObj.error.message;
-      if (errObj.stderr) stderr = errObj.stderr;
-      if (errObj.killed) errorMessage = 'Process timed out';
-    } else if (errObj && errObj.message) {
-      errorMessage = errObj.message;
-    }
-
-    // Map common error codes/messages to user-friendly errors
-    if (errObj && errObj.error && errObj.error.code === 'ECONNRESET') {
-      errorMessage = 'Connection reset by peer';
-    } else if (errObj && errObj.error && errObj.error.code === 'ETIMEDOUT') {
-      errorMessage = `Timeout of ${TIMEOUT}ms exceeded`;
-    } else if (errObj && errObj.error && errObj.error.code === 'ECONNREFUSED') {
-      errorMessage = 'Connection refused';
-    } else if (errObj && errObj.error && (errObj.error.code === 'ENOTFOUND' || errObj.error.code === 'EAI_AGAIN')) {
-      errorMessage = 'DNS lookup failed';
-    } else if (errObj && errObj.killed) {
-      errorMessage = 'Process timed out';
-    }
-
-    return {
-      success: false,
-      proxy: normalized,
-      error: errorMessage ? errorMessage.substring(0, 200) : 'Unknown error',
-      stderr: stderr ? stderr.substring(0, 200) : undefined
-    };
+    const ip = await fetchThroughProxy(proxyObj);
+    if (ip === currentPublicIp) return failure('Proxy resolves to client IP, not a working proxy');
+    if (!isValidIp(ip)) return failure(`Invalid IP format received: ${ip}`);
+    return { success: true, ip, proxy: proxyObj.normalized, latencyMs: Date.now() - started };
+  } catch (err) {
+    return failure(err.message || err.code || 'Unknown error');
   }
 }
 
@@ -214,47 +168,6 @@ function groupProxiesByType(dedupedProxies) {
     }
   }
   return proxiesByType;
-}
-
-/**
- * Log statistics for proxy testing, including error histogram.
- * Also logs how many proxies were already tested and how many still need to be processed.
- */
-function formatErrorLabel(bucket) {
-  if (!bucket || typeof bucket !== 'string') {
-    return bucket;
-  }
-
-  const curlMatch = bucket.match(/curl exited with code (\d+)/);
-  if (curlMatch) {
-    const code = Number(curlMatch[1]);
-    const detail = CURL_ERROR_DESCRIPTIONS[code];
-    if (detail) {
-      return `${bucket} – ${detail}`;
-    }
-    return `${bucket} – see curl exit code ${code}`;
-  }
-
-  const hintKey = ERROR_HINTS[bucket] ? bucket : bucket.split(':')[0];
-  if (ERROR_HINTS[hintKey]) {
-    return `${bucket} – ${ERROR_HINTS[hintKey]}`;
-  }
-
-  return bucket;
-}
-
-function logStats(stats, type, final = false) {
-  // Only log final summary, not intermediate stats
-  if (!final) return;
-
-  const now = Date.now();
-  const elapsed = Math.max((now - stats.startTime) / 1000, 0.001);
-  const totalWorking = stats.totalWorking !== undefined ? stats.totalWorking : (stats.detected || 0);
-  const totalFailed = stats.totalFailed !== undefined ? stats.totalFailed : (stats.failed || 0);
-  const total = stats.total !== undefined ? stats.total : 0;
-  const finishedPerSec = (stats.finished / elapsed).toFixed(1);
-
-  console.log(`[${type}] Tested ${stats.finished}/${total} -> ${totalWorking} working, ${totalFailed} failed (${finishedPerSec}/sec)`);
 }
 
 async function loadProxiesFromSource({ url, type }) {
@@ -360,12 +273,10 @@ async function exportAllProxiesCsv() {
 }
 
 /**
- * Process proxies with a concurrency queue.
- * Tracks error histogram for failed proxies and persists progress regularly.
+ * Process proxies with a concurrency queue, persisting progress regularly.
  */
 async function processProxiesWithQueue(proxyObjs, type, currentResults, workingSet, failedSet, currentPublicIp, results, outputPath, outputDir) {
   let testedCountSinceSave = 0;
-  const errorHistogram = {};
   let totalWorkingCount = currentResults.working.length;
   let totalFailedCount = currentResults.failed.length;
 
@@ -383,17 +294,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
   // Silently skip already-tested proxies
 
   const total = proxiesToTest.length;
-  const stats = {
-    startTime: Date.now(),
-    finished: 0,
-    detected: 0,
-    failed: 0,
-    active: 0,
-    errorHistogram,
-    total,
-    totalWorking: totalWorkingCount,
-    totalFailed: totalFailedCount
-  };
+  const startTime = Date.now();
 
   if (total === 0) {
     // No new proxies to test, skip silently
@@ -401,28 +302,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
   }
 
   let index = 0;
-  let active = 0;
   let finished = 0;
-  let detected = 0;
-  let failed = 0;
-
-  const LOG_INTERVAL_MS = 15000;
-
-  function getErrorType(errorMsg) {
-    if (!errorMsg) return 'Unknown error';
-    const lowerMsg = errorMsg.toLowerCase();
-    if (lowerMsg.includes('timeout')) return 'Timeout';
-    if (lowerMsg.includes('connection refused')) return 'Connection refused';
-    if (lowerMsg.includes('reset by peer')) return 'Connection reset';
-    if (lowerMsg.includes('tls connection')) return 'TLS error';
-    if (lowerMsg.includes('socket disconnected')) return 'Socket disconnected';
-    if (lowerMsg.includes('dns lookup failed')) return 'DNS lookup failed';
-    if (lowerMsg.includes('proxy resolves to client ip')) return 'Proxy resolves to client IP';
-    if (lowerMsg.includes('proxy')) return 'Proxy error';
-    if (lowerMsg.includes('econnrefused')) return 'ECONNREFUSED';
-    if (lowerMsg.includes('invalid ip format received')) return 'Invalid IP format';
-    return errorMsg.split(':')[0].trim().substring(0, 40);
-  }
 
   function recordResult(result) {
     if (!result) return;
@@ -431,17 +311,13 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
       if (!workingSet.has(result.proxy)) {
         currentResults.working.push(result);
         workingSet.add(result.proxy);
-        detected++;
         totalWorkingCount++;
       }
     } else {
       if (!failedSet.has(result.proxy)) {
         currentResults.failed.push(result);
         failedSet.add(result.proxy);
-        failed++;
         totalFailedCount++;
-        const errType = getErrorType(result.error);
-        errorHistogram[errType] = (errorHistogram[errType] || 0) + 1;
       }
     }
 
@@ -485,7 +361,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
   }
   let lastPlainLog = Date.now();
   const progressInterval = setInterval(() => {
-    const elapsed = ((Date.now() - stats.startTime) / 1000).toFixed(0);
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(0);
     const rate = (finished / Math.max(elapsed, 1)).toFixed(1);
     if (isTTY) {
       process.stdout.write(`\r[${type}] ${finished}/${total} tested | ${totalWorkingCount} working | ${totalFailedCount} failed | ${rate}/s | ${elapsed}s`);
@@ -502,7 +378,6 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
       }
 
       const proxyObj = proxiesToTest[currentIndex];
-      active++;
       try {
         const result = await testProxy(proxyObj, currentPublicIp);
         recordResult(result);
@@ -512,7 +387,6 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
       } catch (err) {
         recordInternalError(err, proxyObj);
       } finally {
-        active--;
         finished++;
         persistIfNeeded();
       }
@@ -529,7 +403,7 @@ async function processProxiesWithQueue(proxyObjs, type, currentResults, workingS
   const medianLatency = sorted.length > 0 ? sorted[Math.floor(sorted.length / 2)] : '-';
   const minLatency = sorted.length > 0 ? sorted[0] : '-';
   const maxLatency = sorted.length > 0 ? sorted[sorted.length - 1] : '-';
-  const elapsed = ((Date.now() - stats.startTime) / 1000).toFixed(1);
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
   process.stdout.write(`${isTTY ? '\r' : ''}[${type}] ${finished}/${total} tested | ${totalWorkingCount} working | ${totalFailedCount} failed | ${elapsed}s | avg ${avgLatency}ms med ${medianLatency}ms min ${minLatency}ms max ${maxLatency}ms\n`);
 }
