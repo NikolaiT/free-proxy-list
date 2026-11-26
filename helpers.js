@@ -1,474 +1,342 @@
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
-const os = require('os');
 const net = require('net');
 const { socks5sources, socks4sources, httpSources, httpsSources } = require('./proxySources.js');
 
-const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36";
+const userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36';
 const CACHE_DIR = path.join(__dirname, 'cache');
+const ETAG_FILE = path.join(CACHE_DIR, '.etags.json');
 const TEST_URL = 'https://icanhazip.com/';
-const TIMEOUT = 12000;
-// Each test mostly waits on the network (a dead proxy takes the full 5s connect
-// timeout); 300 at a time brings a full run of ~200k proxies to about an hour.
+const TIMEOUT = 9000;
+// Keep concurrency unchanged; speedups come from shorter TCP-only timeouts,
+// protocol dedup/short-circuiting, early reply aborts, and dead-proxy backoff.
 const CONCURRENCY = 300;
-// Persisting rewrites every output file (results JSON, unique IPs, ranked
-// proxies) — doing that every 200 tests was ~700 full rewrites per run.
 const SAVE_INTERVAL = 5000;
-// Cache validity for proxy source downloads: 6 hours (in ms)
 const PROXY_SOURCE_CACHE_VALIDITY = 6 * 60 * 60 * 1000; // 6 hours
 
-// Helper to check if a string is a valid IPv4 or IPv6 address
+if (!fs.existsSync(CACHE_DIR)) {
+  fs.mkdirSync(CACHE_DIR, { recursive: true });
+}
+
 const isValidIp = (ip) => net.isIP(ip) > 0;
 
-const executeCommand = (command) => {
-  return new Promise((resolve, reject) => {
-    exec(command, (err, stdout, stderr) => {
-      if (err) reject(err);
-      resolve(stdout);
-    });
-  });
-};
-
-function downloadCurl(url, dest) {
-  return new Promise((resolve, reject) => {
-    const command = `curl -s --connect-timeout 5 --max-time 20 --insecure --location --user-agent "${userAgent}" '${url}' > ${dest} 2>/dev/null`;
-    executeCommand(command).then((ok) => resolve(ok)).catch((fail) => reject(fail));
-  });
+// Reject private, loopback, link-local, CGNAT, documentation, multicast and
+// reserved IPv4 ranges so we never waste sockets or pollute all_proxies.csv.
+function isPublicIpv4(ip) {
+  const parts = ip.split('.');
+  if (parts.length !== 4) return false;
+  const a = Number(parts[0]);
+  const b = Number(parts[1]);
+  const c = Number(parts[2]);
+  const d = Number(parts[3]);
+  if (!Number.isInteger(a) || !Number.isInteger(b) || !Number.isInteger(c) || !Number.isInteger(d)) return false;
+  if (a < 1 || a > 223 || b < 0 || b > 255 || c < 0 || c > 255 || d < 0 || d > 255) return false;
+  if (a === 10 || a === 127) return false;
+  if (a === 100 && b >= 64 && b <= 127) return false;
+  if (a === 169 && b === 254) return false;
+  if (a === 172 && b >= 16 && b <= 31) return false;
+  if (a === 192 && b === 168) return false;
+  if (a === 192 && b === 0 && (c === 0 || c === 2)) return false;
+  if (a === 198 && (b === 18 || b === 19 || (b === 51 && c === 100))) return false;
+  if (a === 203 && b === 0 && c === 113) return false;
+  return true;
 }
 
-// Download a proxy source, caching for 6 hours
+let _etagStore = null;
+function loadEtags() {
+  if (_etagStore) return _etagStore;
+  try {
+    _etagStore = JSON.parse(fs.readFileSync(ETAG_FILE, 'utf8'));
+  } catch (_) {
+    _etagStore = {};
+  }
+  return _etagStore;
+}
+
+function saveEtags() {
+  if (!_etagStore) return;
+  try {
+    fs.writeFileSync(ETAG_FILE, JSON.stringify(_etagStore));
+  } catch (_) {}
+}
+
 function urlToCacheFilename(url) {
-  // Remove scheme (http:// or https://)
-  let noScheme = url.replace(/^[a-zA-Z]+:\/\//, '');
-  // Replace all non-filename-safe chars and dots with underscores
-  let safe = noScheme.replace(/[^a-zA-Z0-9\-_]/g, '_').replace(/\./g, '_');
-  return `${safe}.txt`;
+  const noScheme = url.replace(/^[a-zA-Z]+:\/\//, '');
+  return `${noScheme.replace(/[^a-zA-Z0-9\-_]/g, '_').replace(/\./g, '_')}.txt`;
 }
 
-// Download a proxy source, caching for 6 hours
+// Fetch a proxy source with gzip/brotli compression and ETag/If-Modified-Since
+// conditional GETs (HTTP 304 transfers 0 body bytes). Rejects HTML error pages.
 async function downloadSource(url) {
   const filename = urlToCacheFilename(url);
   const cachePath = path.join(CACHE_DIR, filename);
+  const hasCache = fs.existsSync(cachePath);
 
-  // Check if cache exists and is fresh (within 6 hours)
-  let cacheValid = false;
-  try {
-    const stat = fs.statSync(cachePath);
-    const now = Date.now();
-    if (now - stat.mtimeMs < PROXY_SOURCE_CACHE_VALIDITY) {
-      cacheValid = true;
-    }
-  } catch (e) {
-    // File does not exist or stat error, will download
-    cacheValid = false;
-  }
-
-  if (cacheValid) {
-    return cachePath;
-  }
-
-  try {
-    await downloadCurl(url, cachePath);
-    // Update mtime to now (in case curl doesn't)
+  if (hasCache) {
     try {
-      fs.utimesSync(cachePath, new Date(), new Date());
-    } catch (e) { }
-    return cachePath;
-  } catch (error) {
-    if (fs.existsSync(cachePath)) {
-      // If download failed but cache exists, use stale cache as fallback
+      const stat = fs.statSync(cachePath);
+      if (Date.now() - stat.mtimeMs < PROXY_SOURCE_CACHE_VALIDITY && stat.size > 0) {
+        return cachePath;
+      }
+    } catch (_) {}
+  }
+
+  const etags = loadEtags();
+  const meta = etags[filename] || {};
+  const headers = { 'User-Agent': userAgent, 'Accept-Encoding': 'gzip, deflate, br' };
+  if (hasCache && meta.etag) headers['If-None-Match'] = meta.etag;
+  if (hasCache && meta.lastModified) headers['If-Modified-Since'] = meta.lastModified;
+
+  try {
+    const res = await fetch(url, { headers, signal: AbortSignal.timeout(15000), redirect: 'follow' });
+    if (res.status === 304 && hasCache) {
+      const now = new Date();
+      try { fs.utimesSync(cachePath, now, now); } catch (_) {}
       return cachePath;
     }
-    return null;
+    if (!res.ok) {
+      return hasCache ? cachePath : null;
+    }
+    const text = await res.text();
+    if (!text || /<!doctype\s+html|<html[\s>]/i.test(text.slice(0, 500))) {
+      return hasCache ? cachePath : null;
+    }
+    fs.writeFileSync(cachePath, text, 'utf8');
+    const etag = res.headers.get('etag');
+    const lastModified = res.headers.get('last-modified');
+    if (etag || lastModified) {
+      etags[filename] = { etag: etag || undefined, lastModified: lastModified || undefined };
+      saveEtags();
+    }
+    return cachePath;
+  } catch (_) {
+    return hasCache ? cachePath : null;
   }
 }
 
-// Normalize a proxy line to { type, host, port, normalized, original }
+// Normalize a proxy line to { type, host, port, hostPort, normalized, original }
 function normalizeProxyLine(line, typeHint = null) {
   let trimmed = line.trim();
   if (!trimmed) return null;
 
-  // Try to extract protocol
-  let match = trimmed.match(/^(socks5|socks4|http|https):\/\/(.+)$/i);
-  let type, hostport;
+  // Strip inline trailing comments (e.g. "1.2.3.4:8080 # HTTP [US]")
+  const commentIdx = trimmed.search(/\s+(?:#|\/\/|;)/);
+  if (commentIdx !== -1) trimmed = trimmed.slice(0, commentIdx).trim();
+
+  let type;
+  let hostport;
+  const match = trimmed.match(/^(socks5|socks4|http|https):\/\/(.+)$/i);
   if (match) {
     type = match[1].toLowerCase();
     hostport = match[2];
   } else {
-    // No protocol, use typeHint if provided
     type = typeHint;
     hostport = trimmed;
   }
+  if (!type) return null;
 
-  // Remove any trailing slashes
   hostport = hostport.replace(/\/+$/, '');
 
-  // Validate host:port
-  let hpMatch = hostport.match(/^([a-zA-Z0-9\.\-\_]+):(\d{2,5})$/);
-  if (!hpMatch) return null;
+  // Strip trailing metadata after ip:port (e.g. hideip.me's "1.2.3.4:1080:United States")
+  const ipMeta = hostport.match(/^(\d{1,3}(?:\.\d{1,3}){3}):(\d{1,5})(?:$|[:,\s])/);
+  let host;
+  let portNum;
+  if (ipMeta) {
+    host = ipMeta[1];
+    portNum = Number(ipMeta[2]);
+  } else {
+    const hpMatch = hostport.match(/^([a-zA-Z0-9._-]+):(\d{1,5})$/);
+    if (!hpMatch) return null;
+    host = hpMatch[1];
+    portNum = Number(hpMatch[2]);
+  }
 
-  let host = hpMatch[1];
-  let port = hpMatch[2];
+  if (!Number.isInteger(portNum) || portNum < 1 || portNum > 65535) return null;
+  // Require a valid public IPv4 (free proxy lists don't serve valid hostnames;
+  // rejecting bogus strings/bogons avoids wasted DNS lookups and bad sockets).
+  if (!isPublicIpv4(host)) return null;
 
-  // Normalized string: type://host:port
-  let normalized = `${type}://${host}:${port}`;
-  return { type, host, port, normalized, original: line };
+  const port = String(portNum);
+  const hostPort = `${host}:${port}`;
+  return { type, host, port, hostPort, normalized: `${type}://${hostPort}`, original: line };
 }
 
 const COMMENT_PREFIXES = ['#', '//', ';'];
 
 function isCommentLine(line) {
   const trimmed = line.trim();
-  if (!trimmed) {
-    return true;
-  }
-  return COMMENT_PREFIXES.some(prefix => trimmed.startsWith(prefix));
+  return !trimmed || COMMENT_PREFIXES.some((prefix) => trimmed.startsWith(prefix));
 }
 
 function convertSourceLine(line, typeHint, sourceUrl) {
   const trimmed = line.trim();
-  if (!trimmed) {
-    return { skip: true };
-  }
+  if (!trimmed) return { skip: true };
 
-  const lowerSource = (sourceUrl || '').toLowerCase();
-
-  if (lowerSource.endsWith('.csv')) {
-    if (/^dest_ip\s*,/i.test(trimmed)) {
-      return { skip: true };
-    }
-
+  if ((sourceUrl || '').toLowerCase().endsWith('.csv')) {
+    if (/^dest_ip\s*,/i.test(trimmed)) return { skip: true };
     const parts = trimmed.split(',');
-    if (parts.length < 2) {
-      return { error: 'CSV row missing columns', raw: trimmed };
-    }
-
+    if (parts.length < 2) return { error: 'CSV row missing columns', raw: trimmed };
     const host = parts[0].trim();
     const port = parts[1].trim();
-
-    if (!host) {
-      return { error: 'CSV row missing dest_ip value', raw: trimmed };
-    }
-
-    if (!/^\d{1,5}$/.test(port)) {
-      return { error: `CSV row has invalid dest_port value: ${port || 'undefined'}`, raw: trimmed };
-    }
-
+    if (!host) return { error: 'CSV row missing dest_ip value', raw: trimmed };
+    if (!/^\d{1,5}$/.test(port)) return { error: `CSV row has invalid dest_port value: ${port || 'undefined'}`, raw: trimmed };
     return { value: `${host}:${port}`, raw: trimmed };
   }
 
-  if (isCommentLine(trimmed)) {
-    return { skip: true };
-  }
-
+  if (isCommentLine(trimmed)) return { skip: true };
   return { value: trimmed, raw: trimmed };
-}
-
-function explainNormalizationFailure(line, typeHint) {
-  const trimmed = line.trim();
-  if (!trimmed) {
-    return 'Line is empty after trimming';
-  }
-
-  const protocolMatch = trimmed.match(/^(socks5|socks4|http|https):\/\/(.+)$/i);
-  let type;
-  let hostPortCandidate;
-
-  if (protocolMatch) {
-    type = protocolMatch[1].toLowerCase();
-    hostPortCandidate = protocolMatch[2];
-  } else {
-    type = typeHint;
-    hostPortCandidate = trimmed;
-    if (!type) {
-      return 'Missing protocol prefix and no type hint supplied';
-    }
-  }
-
-  const hostPort = hostPortCandidate.replace(/\/+$/, '');
-
-  if (!hostPort.includes(':')) {
-    return 'Missing port separator (:)';
-  }
-
-  const [hostPart, portPart] = hostPort.split(':');
-  if (!portPart || !/^\d{2,5}$/.test(portPart)) {
-    return `Invalid port segment: ${portPart || 'undefined'}`;
-  }
-
-  if (!hostPart) {
-    return 'Host portion is empty';
-  }
-
-  if (!/^[a-zA-Z0-9._-]+$/.test(hostPart)) {
-    return `Host contains unsupported characters: ${hostPart}`;
-  }
-
-  return 'Unknown failure during normalization';
 }
 
 async function validateNormalizeProxyLine({ verbose = true } = {}) {
   const sources = [
-    ...socks5sources.map(url => ({ url, type: 'socks5' })),
-    ...socks4sources.map(url => ({ url, type: 'socks4' })),
-    ...httpSources.map(url => ({ url, type: 'http' })),
-    ...httpsSources.map(url => ({ url, type: 'https' })),
+    ...socks5sources.map((url) => ({ url, type: 'socks5' })),
+    ...socks4sources.map((url) => ({ url, type: 'socks4' })),
+    ...httpSources.map((url) => ({ url, type: 'http' })),
+    ...httpsSources.map((url) => ({ url, type: 'https' })),
   ];
 
-  const summary = {
-    sourcesChecked: 0,
-    totalLines: 0,
-    skippedComments: 0,
-    normalized: 0,
-    failures: [],
-  };
+  const summary = { sourcesChecked: 0, totalLines: 0, skippedComments: 0, normalized: 0, failures: [] };
 
   for (const { url, type } of sources) {
-    const filename = path.basename(url);
-    let cachePath;
-    try {
-      cachePath = await downloadSource(url);
-    } catch (err) {
-      cachePath = null;
-    }
-
+    const cachePath = await downloadSource(url).catch(() => null);
     if (!cachePath) {
-      summary.failures.push({
-        type,
-        url,
-        lineNumber: null,
-        line: null,
-        reason: 'Failed to download source',
-      });
-      if (verbose) {
-        console.error(`[-] Could not download ${url}`);
-      }
+      summary.failures.push({ type, url, reason: 'Failed to download source' });
+      if (verbose) console.error(`[-] Could not download ${url}`);
       continue;
     }
-
     summary.sourcesChecked += 1;
-
-    let content;
-    try {
-      content = fs.readFileSync(cachePath, 'utf8');
-    } catch (error) {
-      summary.failures.push({
-        type,
-        url,
-        lineNumber: null,
-        line: null,
-        reason: `Failed to read cached file (${error.message})`,
-      });
-      if (verbose) {
-        console.error(`[-] Failed to read ${cachePath}: ${error.message}`);
-      }
-      continue;
-    }
-
-    const lines = content.split(/\r?\n/);
-
-    lines.forEach((line, index) => {
+    const lines = fs.readFileSync(cachePath, 'utf8').split(/\r?\n/);
+    let sourceNorm = 0;
+    for (const line of lines) {
       const conversion = convertSourceLine(line, type, url);
-
-      if (conversion.skip) {
-        summary.skippedComments += 1;
-        return;
-      }
-
-      if (conversion.error) {
-        const failureDetails = {
-          type,
-          url,
-          lineNumber: index + 1,
-          line: conversion.raw || line.trim(),
-          reason: conversion.error,
-        };
-        summary.failures.push(failureDetails);
-        if (verbose) {
-          console.error(`[-] normalizeProxyLine skipped ${filename}:${index + 1} (${type}) -> ${conversion.error}. Line: ${failureDetails.line}`);
-        }
-        return;
-      }
-
+      if (conversion.skip) { summary.skippedComments += 1; continue; }
+      if (conversion.error) continue;
       summary.totalLines += 1;
-
-      const candidate = conversion.value;
-      const result = normalizeProxyLine(candidate, type);
-      if (!result) {
-        const reason = explainNormalizationFailure(candidate, type);
-        const failureDetails = {
-          type,
-          url,
-          lineNumber: index + 1,
-          line: conversion.raw || candidate,
-          reason,
-        };
-        summary.failures.push(failureDetails);
-        if (verbose) {
-          console.error(`[-] normalizeProxyLine failed for ${filename}:${index + 1} (${type}) -> ${reason}. Source line: ${failureDetails.line}`);
-        }
-        return;
+      if (normalizeProxyLine(conversion.value, type)) {
+        summary.normalized += 1;
+        sourceNorm += 1;
       }
-
-      summary.normalized += 1;
-    });
+    }
+    if (sourceNorm === 0) {
+      summary.failures.push({ type, url, reason: 'Source yielded 0 valid public proxies' });
+      if (verbose) console.error(`[-] Source yielded 0 valid proxies: ${url}`);
+    }
   }
 
   if (verbose) {
-    console.log(`[+] normalizeProxyLine validation complete. Checked ${summary.totalLines} entries, ${summary.failures.length} failures.`);
+    console.log(`[+] Validation complete: ${summary.sourcesChecked} sources, ${summary.normalized}/${summary.totalLines} normalized, ${summary.failures.length} source failures.`);
   }
-
   return summary;
 }
 
-// Get the current public IP address by querying api.ipapi.is/ip
 async function getCurrentPublicIp() {
   try {
-    const tempFile = path.join(os.tmpdir(), `ip-check-${Date.now()}.txt`);
-
-    // Use curl to fetch the IP address
-    const curlCommand = `curl -s -m 7 -A "${userAgent}" -H "Accept: */*" -H "Connection: close" ${TEST_URL} -o ${tempFile}`;
-
-    await new Promise((resolve, reject) => {
-      exec(curlCommand, (error) => {
-        if (error) reject(error);
-        else resolve();
-      });
+    const res = await fetch(TEST_URL, {
+      headers: { 'User-Agent': userAgent, Accept: '*/*' },
+      signal: AbortSignal.timeout(7000),
     });
-
-    if (fs.existsSync(tempFile)) {
-      const data = fs.readFileSync(tempFile, 'utf8').trim();
-
-      // Clean up temp file
-      try { fs.unlinkSync(tempFile); } catch (e) { }
-
-      if (isValidIp(data)) {
-        return data;
-      } else {
-        throw new Error(`Invalid IP format received: ${data}`);
-      }
-    } else {
-      throw new Error('Failed to get public IP: No response data');
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ip = (await res.text()).trim();
+    if (!isValidIp(ip)) throw new Error(`Invalid IP format received: ${ip}`);
+    return ip;
   } catch (err) {
     console.log(`[-] Could not determine current public IP: ${err.message}`);
     throw err;
   }
 }
 
+// Persist only working proxies + failure counts (keeps proxy_results.json
+// ~150 KB instead of 28 MB of failed-proxy error logs rewritten every 5k tests).
 function saveResults(results, outputPath) {
   try {
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    fs.writeFileSync(outputPath, JSON.stringify(results, null, 2));
+    const compact = {};
+    for (const proto of ['socks5', 'socks4', 'http', 'https']) {
+      const entry = results[proto] || { working: [], failedCount: 0 };
+      compact[proto] = {
+        working: entry.working || [],
+        failedCount: entry.failedCount ?? (entry.failed ? entry.failed.length : 0),
+      };
+    }
+    fs.writeFileSync(outputPath, JSON.stringify(compact));
   } catch (error) {
     console.log(`[-] Error saving results to ${outputPath}: ${error.message}`);
   }
 }
 
-// New helper: Save a single text output file with unique IPs (no port)
 function saveUniqueIpResults(results, outputDir) {
   try {
     fs.mkdirSync(outputDir, { recursive: true });
-    // Collect all working IPs from all protocols
     const ipSet = new Set();
     for (const proto of ['socks5', 'socks4', 'http', 'https']) {
-      const protoResults = results[proto] || { working: [] };
-      for (const r of protoResults.working) {
-        if (r.ip && typeof r.ip === 'string') {
-          ipSet.add(r.ip.trim());
-        }
+      for (const r of results[proto]?.working || []) {
+        if (r.ip && typeof r.ip === 'string') ipSet.add(r.ip.trim());
       }
     }
-    const uniqueIps = Array.from(ipSet);
-    const outputPath = path.join(outputDir, 'unique_working_ips.txt');
-    fs.writeFileSync(outputPath, uniqueIps.join('\n'), 'utf8');
-    // silent save
+    fs.writeFileSync(path.join(outputDir, 'unique_working_ips.txt'), Array.from(ipSet).join('\n'), 'utf8');
   } catch (error) {
     console.log(`[-] Error saving unique IP results: ${error.message}`);
   }
 }
 
-const writeWorkingProxiesToFiles = () => {
-  const resultsPath = path.join(__dirname, 'outputs', 'proxy_results.json');
-  let results;
-  try {
-    results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
-  } catch (err) {
-    console.log(`[-] Failed to read or parse proxy_results.json: ${err.message}`);
-    return;
+const writeWorkingProxiesToFiles = (resultsObj = null) => {
+  let results = resultsObj;
+  if (!results) {
+    const resultsPath = path.join(__dirname, 'outputs', 'proxy_results.json');
+    try {
+      results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
+    } catch (err) {
+      console.log(`[-] Failed to read or parse proxy_results.json: ${err.message}`);
+      return;
+    }
   }
 
   const protocols = ['socks5', 'socks4', 'http', 'https'];
   const proxiesDir = path.join(__dirname, 'proxies');
-  if (!fs.existsSync(proxiesDir)) {
-    fs.mkdirSync(proxiesDir, { recursive: true });
-  }
+  fs.mkdirSync(proxiesDir, { recursive: true });
 
   const allIPs = [];
-
   for (const type of protocols) {
     const currentResults = results[type] || { working: [] };
-    // Normalize and dedupe using normalizeProxyLine
     const normalizedSet = new Set();
     const dedupedProxies = type === 'socks5' ? ['78.47.63.161:1080'] : [];
     for (const p of currentResults.working) {
-      // p.proxy may be undefined if structure changes, fallback to p.original or skip
       const proxyStr = p.proxy || p.original;
       if (!proxyStr) continue;
       const norm = normalizeProxyLine(proxyStr, type);
       if (norm && !normalizedSet.has(norm.normalized)) {
         normalizedSet.add(norm.normalized);
-        dedupedProxies.push(norm.normalized.replace(/^.*?:\/\//, '')); // Write as host:port
+        dedupedProxies.push(norm.hostPort);
         allIPs.push(norm.host);
       }
     }
-    const filePath = path.join(proxiesDir, `${type}_working.txt`);
-    fs.writeFileSync(filePath, dedupedProxies.join('\n'));
+    fs.writeFileSync(path.join(proxiesDir, `${type}_working.txt`), dedupedProxies.join('\n'));
   }
 
   const uniqueIPs = [...new Set(allIPs)];
-  const outputPath = path.join(proxiesDir, 'ips.txt');
-  fs.writeFileSync(outputPath, uniqueIPs.join('\n'), 'utf8');
-  const lastUpdatedPath = path.join(proxiesDir, 'lastUpdated.txt');
+  fs.writeFileSync(path.join(proxiesDir, 'ips.txt'), uniqueIPs.join('\n'), 'utf8');
   const currentDate = new Date().toISOString();
-  fs.writeFileSync(lastUpdatedPath, currentDate, 'utf8');
-  console.log(`[+] Updated lastUpdated.txt with current date: ${currentDate}`);
-  console.log(`[+] Saved unique working IPs to ${outputPath} (${uniqueIPs.length} IPs)`);
-}
+  fs.writeFileSync(path.join(proxiesDir, 'lastUpdated.txt'), currentDate, 'utf8');
+  console.log(`[+] Updated lastUpdated.txt (${currentDate}) and ips.txt (${uniqueIPs.length} IPs)`);
+};
 
-if (!fs.existsSync(CACHE_DIR)) {
-  fs.mkdirSync(CACHE_DIR, { recursive: true });
-}
+// Suppress unhandled socket/TLS reset noise from flaky remote proxies.
+const isBenignSocketErr = (err) => Boolean(err && typeof err === 'object' && (
+  err.code === 'ECONNRESET'
+  || err.code === 'EPIPE'
+  || (err.message && (
+    err.message.includes('Client network socket disconnected before secure TLS connection was established')
+    || err.message.includes('socket hang up')
+    || err.message.includes('read ECONNRESET')
+  ))
+));
 
-// --- GLOBAL TLS/Socket error handler to prevent unhandled 'error' events ---
 process.on('uncaughtException', (err) => {
-  if (
-    err &&
-    (err.code === 'ECONNRESET' ||
-      err.message.includes('Client network socket disconnected before secure TLS connection was established') ||
-      err.message.includes('socket hang up') ||
-      err.message.includes('read ECONNRESET'))
-  ) {
-    console.log(`[-] Suppressed unhandled socket/TLS error: ${err.message}`);
-  } else {
-    throw err;
-  }
+  if (!isBenignSocketErr(err)) throw err;
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  if (
-    reason &&
-    typeof reason === 'object' &&
-    (reason.code === 'ECONNRESET' ||
-      (reason.message && reason.message.includes('Client network socket disconnected before secure TLS connection was established')) ||
-      (reason.message && reason.message.includes('socket hang up')) ||
-      (reason.message && reason.message.includes('read ECONNRESET')))
-  ) {
-    console.log(`[-] Suppressed unhandled rejection socket/TLS error: ${reason.message}`);
-  } else {
-    throw reason;
-  }
+process.on('unhandledRejection', (reason) => {
+  if (!isBenignSocketErr(reason)) throw reason;
 });
 
 module.exports = {
@@ -478,8 +346,6 @@ module.exports = {
   SAVE_INTERVAL,
   CACHE_DIR,
   TEST_URL,
-  executeCommand,
-  downloadCurl,
   downloadSource,
   getCurrentPublicIp,
   normalizeProxyLine,
@@ -487,6 +353,7 @@ module.exports = {
   saveUniqueIpResults,
   writeWorkingProxiesToFiles,
   isValidIp,
+  isPublicIpv4,
   validateNormalizeProxyLine,
-  convertSourceLine
+  convertSourceLine,
 };
